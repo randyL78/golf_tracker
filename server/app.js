@@ -1,26 +1,31 @@
 // Dependencies
 import express from 'express';
 import bodyParser from 'body-parser';
+import mongoose from 'mongoose';
 
 // Controllers
 import apiController from './controllers/api';
 
-// Global variables
-const port = 8080;
-
 // Express entry point
 const app = express();
 
+// set our port to either a predetermined port number or 3001
+app.set('port', process.env.PORT || 3001);
+
 // Middleware
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// Connect Database
+mongoose.set('useCreateIndex', true);
+mongoose.connect('mongodb://localhost/blog', { useNewUrlParser: true });
 
 // Routes
-app.use('/api/v1', apiController);
+app.use('/api', apiController);
 
 // Start server
-app.listen(port, () => {
-  console.log(`Server started on ${port}`);
+const server = app.listen(app.get('port'), () => {
+  console.log(`Express server is listening on port ${server.address().port}`);
 });
 
 export default app;
