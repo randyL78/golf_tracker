@@ -14,8 +14,8 @@ export function findAllCourses(callback) {
 }
 
 // find course by id
-export function findCourse(id, callback) {
-  Course.find({ _id: id }, (error, course) => {
+export function findCourse(slug, callback) {
+  Course.find({ slug }, (error, course) => {
     if (error) {
       console.error(error);
       callback(error);
@@ -37,17 +37,16 @@ export function createCourse(name, address, zip, callback) {
       console.log(error)
       callback(error, true);
     } else {
-      console.log('Course saved correctly');
       callback(newCourse);
     }
   })
 }
 
 // delete a course
-export function deleteCourse(id, callback) {
+export function deleteCourse(slug, callback) {
 
   // Use .deleteOne because .remove is deprecated
-  Course.deleteOne({ _id: id }, error => {
+  Course.deleteOne({ slug }, error => {
     if (error) {
       callback(false, error);
     } else {
@@ -57,14 +56,14 @@ export function deleteCourse(id, callback) {
 }
 
 // update a course
-export function updateCourse(id, name, address, zip, callback) {
+export function updateCourse(slug, name, address, zip, callback) {
   const updatedCourse = {
     name,
     address,
     zip
   }
   // Use .updateOne because .update is deprecated
-  Course.updateOne({ _id: id }, updatedCourse, (error, affected) => {
+  Course.updateOne({ slug }, updatedCourse, (error, affected) => {
     if (error) {
       callback(error, false)
     } else {

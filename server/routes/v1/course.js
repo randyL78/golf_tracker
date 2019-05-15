@@ -33,17 +33,17 @@ router.post('/course/', (req, res) => {
 });
 
 // GET get specific course information by :id
-router.get('/course/:id', (req, res) => {
-  const { params: { id } } = req;
-  findCourse(id, courses => {
+router.get('/course/:slug', (req, res) => {
+  const { params: { slug } } = req;
+  findCourse(slug, courses => {
     res.json(courses);
   })
 });
 
 // PUT update specific course information by :id
-router.put('/course/:id', (req, res) => {
-  const { params: { id }, body: { name, address, zip } } = req;
-  updateCourse(id, name, address, zip, (message, updated) => {
+router.put('/course/:slug', (req, res) => {
+  const { params: { slug }, body: { name, address, zip } } = req;
+  updateCourse(slug, name, address, zip, (message, updated) => {
     res.json({
       message,
       updated
@@ -52,9 +52,9 @@ router.put('/course/:id', (req, res) => {
 });
 
 // Remove specific course information by :id
-router.delete('/course/:id', (req, res) => {
-  const { params: { id } } = req;
-  deleteCourse(id, (removed, error) => {
+router.delete('/course/:slug', (req, res) => {
+  const { params: { slug } } = req;
+  deleteCourse(slug, (removed, error) => {
     if (removed) {
       res.json({
         response: {
