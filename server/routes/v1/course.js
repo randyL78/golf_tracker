@@ -6,7 +6,8 @@ import {
   createCourse,
   findAllCourses,
   findCourse,
-  deleteCourse
+  deleteCourse,
+  updateCourse
 } from '../../controllers/course';
 
 const router = express.Router();
@@ -41,10 +42,13 @@ router.get('/course/:id', (req, res) => {
 
 // PUT update specific course information by :id
 router.put('/course/:id', (req, res) => {
-  const { params: { id } } = req;
-  res.send(`
-    <h1>Updated information on course with id of ${id}</h1>
-  `);
+  const { params: { id }, body: { name, address, zip } } = req;
+  updateCourse(id, name, address, zip, (message, updated) => {
+    res.json({
+      message,
+      updated
+    });
+  })
 });
 
 // Remove specific course information by :id

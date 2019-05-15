@@ -45,11 +45,30 @@ export function createCourse(name, address, zip, callback) {
 
 // delete a course
 export function deleteCourse(id, callback) {
+
+  // Use .deleteOne because .remove is deprecated
   Course.deleteOne({ _id: id }, error => {
     if (error) {
       callback(false, error);
     } else {
       callback(true);
+    }
+  })
+}
+
+// update a course
+export function updateCourse(id, name, address, zip, callback) {
+  const updatedCourse = {
+    name,
+    address,
+    zip
+  }
+  // Use .updateOne because .update is deprecated
+  Course.updateOne({ _id: id }, updatedCourse, (error, affected) => {
+    if (error) {
+      callback(error, false)
+    } else {
+      callback(affected, true)
     }
   })
 }
