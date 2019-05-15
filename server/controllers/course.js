@@ -9,7 +9,6 @@ export function findAllCourses(callback) {
       console.error(error);
       return false;
     }
-
     callback(courses);
   })
 }
@@ -40,6 +39,17 @@ export function createCourse(name, address, zip, callback) {
     } else {
       console.log('Course saved correctly');
       callback(newCourse);
+    }
+  })
+}
+
+// delete a course
+export function deleteCourse(id, callback) {
+  Course.deleteOne({ _id: id }, error => {
+    if (error) {
+      callback(false, error);
+    } else {
+      callback(true);
     }
   })
 }

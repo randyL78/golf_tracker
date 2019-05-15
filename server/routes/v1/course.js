@@ -2,7 +2,12 @@
 import express from 'express';
 
 // controllers
-import { createCourse, findAllCourses, findCourse } from '../../controllers/course';
+import {
+  createCourse,
+  findAllCourses,
+  findCourse,
+  deleteCourse
+} from '../../controllers/course';
 
 const router = express.Router();
 
@@ -16,7 +21,6 @@ router.get('/', (req, res) => {
 //POST add new course information
 router.post('/course/', (req, res) => {
   const { name, address, zip } = req.body;
-  console.log(name, address, zip);
   createCourse(name, address, zip, (data, error = false) => {
     res.json({
       response: {
@@ -46,9 +50,22 @@ router.put('/course/:id', (req, res) => {
 // Remove specific course information by :id
 router.delete('/course/:id', (req, res) => {
   const { params: { id } } = req;
-  res.send(`
-    <h1>Removed course with id of: ${id}</h1>
-  `);
+  deleteCourse(id, (removed, error) => {
+    if (removed) {
+      res.json({
+        response: {
+          removed
+        }
+      });
+    } else {
+      res.json({
+        response: {
+          removed,
+          message: error
+        }
+      });
+    }
+  })
 });
 
 
