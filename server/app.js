@@ -3,8 +3,8 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 
-// Controllers
-import apiController from './controllers/api';
+// Routes
+import apiRoutes from './routes/api';
 
 // Express entry point
 const app = express();
@@ -21,7 +21,7 @@ mongoose.set('useCreateIndex', true);
 mongoose.connect('mongodb://localhost/blog', { useNewUrlParser: true });
 
 // Routes
-app.use('/api', apiController);
+app.use('/api', apiRoutes);
 
 // Start server
 const server = app.listen(app.get('port'), () => {

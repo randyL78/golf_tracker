@@ -8,4 +8,6 @@ const courseSchema = new Schema({
   zip: { type: String, required: true }
 });
 
-export default courseSchema;
+const Course = mongoose.model('Course', courseSchema);
+
+export default Course;
