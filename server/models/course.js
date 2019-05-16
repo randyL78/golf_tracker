@@ -1,23 +1,70 @@
-// Dependencies
-import mongoose, { Schema } from 'mongoose';
-import slug from 'slug';
+// Import the schema
+import Course from '../schemas/course';
 
-// Define course schema
-const courseSchema = new Schema({
-  address: String,
-  name: { type: String, required: true },
-  slug: { type: String, unique: true },
-  zip: { type: String, required: true }
-});
 
-// add slug before saving
-courseSchema.pre('save', function (next) {
-  this.slug = slug(this.name, { lower: 'on' });
+// find all courses
+export function findAllCourses(callback) {
+  Course.find({}, (error, courses) => {
+    if (error) {
+      console.error(error);
+      return false;
+    }
+    callback(courses);
+  })
+}
 
-  next();
-});
+// find course by id
+export function findCourse(slug, callback) {
+  Course.find({ slug }, (error, course) => {
+    callback(error ? error : course);
+  })
+}
 
-// Create the model
-const Course = mongoose.model('Course', courseSchema);
+// create a new course
+export function createCourse(name, address, zip, callback) {
+  const newCourse = new Course({
+    address,
+    name,
+    zip
+  })
 
-export default Course;
+  newCourse.save(error => {
+    if (error) {
+      console.log(error)
+      callback(error, true);
+    } else {
+      callback(newCourse);
+    }
+  })
+}
+
+// delete a course
+export function deleteCourse(slug, callback) {
+
+  // Use .deleteOne because .remove is deprecated
+  Course.deleteOne({ slug }, error => {
+    if (error) {
+      callback(false, error);
+    } else {
+      callback(true);
+    }
+  })
+}
+
+// update a course
+export function updateCourse(slug, name, address, zip, callback) {
+  const updatedCourse = {
+    name,
+    address,
+    zip
+  }
+  // Use .updateOne because .update is deprecated
+  Course.updateOne({ slug }, updatedCourse, (error, affected) => {
+    if (error) {
+      callback(error, false)
+    } else {
+      callback(affected, true)
+    }
+  })
+}
+

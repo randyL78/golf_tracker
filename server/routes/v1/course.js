@@ -1,14 +1,14 @@
-// dependencies
+// Dependencies
 import express from 'express';
 
-// controllers
+// Model functions
 import {
   createCourse,
   findAllCourses,
   findCourse,
   deleteCourse,
   updateCourse
-} from '../../controllers/course';
+} from '../../models/course';
 
 const router = express.Router();
 

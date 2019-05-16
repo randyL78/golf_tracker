@@ -3,6 +3,7 @@ import express from 'express';
 
 // sub routes
 import courseRoutes from './course';
+import holeRoutes from './hole';
 
 const router = express.Router();
 
@@ -19,6 +20,9 @@ router.get('/', (req, res) => {
 
 // course routes
 router.use('/courses', courseRoutes);
+
+// hole routes
+router.use('/holes', holeRoutes);
 
 
 export default router;
