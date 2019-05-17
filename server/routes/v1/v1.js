@@ -2,8 +2,10 @@
 import express from 'express';
 
 // sub routes
-import courseRoutes from './course';
-import holeRoutes from './hole';
+import courseRoutes from './courses';
+import holeRoutes from './holes';
+import roundRoutes from './rounds';
+
 
 const router = express.Router();
 
@@ -24,5 +26,7 @@ router.use('/courses', courseRoutes);
 // hole routes
 router.use('/holes', holeRoutes);
 
+// round routes
+router.use('/rounds', roundRoutes);
 
 export default router;

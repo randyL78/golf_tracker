@@ -19,18 +19,22 @@ const holeSchema = new Schema({
     type: Number,
     min: 1,
     max: 14,
-    default: 4
+    default: null
   },
   putts: {
     type: Number,
     min: 0,
     max: 13,
-    default: 2
+    default: null
   },
   fairway: {
     type: String,
-    enum: ['right', 'left', 'short', 'onTarget'],
-    default: 'onTarget'
+    enum: ['right', 'left', 'short', 'onTarget', null],
+    default: null
+  },
+  round: {
+    type: Schema.Types.ObjectId,
+    ref: 'Round'
   }
 });
 

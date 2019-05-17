@@ -23,6 +23,17 @@ export function findHoleById(id, callback) {
   });
 }
 
+// find hole by round id and hole number
+export function findHoleByRoundNumber(round, hole, callback) {
+  Hole.findOne({ round, number: hole }, (error, hole) => {
+    if (error) {
+      callback(error, true);
+    } else {
+      callback(hole);
+    }
+  });
+}
+
 // create a new hole
 export function createHole(number, par, strokes, putts, fairway, callback) {
   const newHole = new Hole({
@@ -40,7 +51,6 @@ export function createHole(number, par, strokes, putts, fairway, callback) {
       callback(newHole, false);
     }
   })
-
 }
 
 // delete a hole
@@ -69,6 +79,18 @@ export function updateHole(id, number, par, strokes, putts, fairway, callback) {
       callback(error, false)
     } else {
       callback(hole, true)
+    }
+  })
+}
+
+// find round holes and delete
+export function deleteRoundHoles(round, callback) {
+
+  Hole.deleteMany({ round }, (error, data) => {
+    if (error) {
+      callback(error, true);
+    } else {
+      callback(data);
     }
   })
 }
