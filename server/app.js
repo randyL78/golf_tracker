@@ -9,6 +9,13 @@ import apiRoutes from './routes/api';
 // Express entry point
 const app = express();
 
+// Enable CORS for all routes
+app.all('/', function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  next()
+});
+
 // set our port to either a predetermined port number or 3001
 app.set('port', process.env.PORT || 3001);
 
