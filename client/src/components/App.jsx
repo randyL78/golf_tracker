@@ -1,15 +1,40 @@
 // dependencies
-import React from 'react';
+import React, { Component } from 'react';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 // styles
 import styles from './App.scss';
 
 // components
-import Home from './Home';
+import Logo from './Logo/Logo';
+import Nav from './Navigation/Nav';
 
-const App = props =>
-  <div className={styles.App}>
-    <Home />
-  </div>;
+/**
+ * Main App component responsible for handling routes, redirection, and managing major state
+ */
+class App extends Component {
+
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      inline: false,
+      mobile: false,
+      data: {}
+    }
+  }
+
+
+  render() {
+    return (
+      <BrowserRouter>
+        <div className={styles.App}>
+          <Logo inline={this.state.inline} />
+          <Nav mobile={this.state.mobile} />
+        </div>
+      </BrowserRouter>
+    );
+  }
+}
 
 export default App;
