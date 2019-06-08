@@ -22,13 +22,44 @@ class App extends Component {
       // sets the Logo to be inline or stacked
       inline: true,
 
-      // navigation component props
-      nav: {
-        contentOpen: true
-      },
+      // navigation component prop
+      showMenu: true,      
 
       // data from the server
       data: {}
+    }
+
+    // bind `this` to event listener
+    this.updateShowMenu = this.updateShowMenu.bind(this);
+  }
+
+  // add event listen to detect window resizing.
+  componentDidMount() {
+    if ( window.innerWidth >= 1400) {
+      this.setState({
+        showMenu: false
+      });
+    }
+    window.addEventListener('resize', this.updateShowMenu);
+  }
+
+  // remove the event listener
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateShowMenu);
+  }
+
+  // update `showMenu` based on browser window width
+  updateShowMenu() {
+    let isDesktopWidth = window.innerWidth >= 1400;
+
+    if (this.state.showMenu && isDesktopWidth) {
+      this.setState({
+        showMenu: false
+      })
+    } else if (!this.state.showMenu && !isDesktopWidth) {
+      this.setState({
+        showMenu: true
+      })
     }
   }
 
@@ -38,7 +69,7 @@ class App extends Component {
       <BrowserRouter>
         <div className={styles.App}>
           <Logo inline={this.state.inline} />
-          <Navigation showMenu={!this.state.nav.contentOpen} />
+          <Navigation showMenu={this.state.showMenu} />
           <Container />
         </div>
       </BrowserRouter>

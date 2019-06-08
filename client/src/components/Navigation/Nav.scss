@@ -11,17 +11,17 @@
   right: 0;
   width: 75%;
   max-width: 400px;
+  transition: transform 1s ease 0s;
 }
 
 .Nav {
-
   @extend %Nav;
-  transition: transform 1s ease 0s;
+  
 
   &Hide {
     @extend %Nav;
     transform: translateX(400px);
-    transition: transform 1s ease 0s;
+    
   }
 
   &Link {

@@ -38,11 +38,13 @@ class Navigation extends Component {
   render() {
 
     // show the full navigation in desktop mode or if menu is in open state
-    const showNav = this.state.isOpen;
+    const showMenu = this.props.showMenu;
+    const showNav = this.state.isOpen || !showMenu;
 
     return (
       <div>
-        <Menu open={this.state.isOpen} handleClick={this.handleMenuClick} />
+        {showMenu ?
+          <Menu open={this.state.isOpen} handleClick={this.handleMenuClick} /> : ""}
         <Nav show={showNav} />
       </div>
     )
