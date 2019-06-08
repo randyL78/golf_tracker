@@ -7,7 +7,8 @@ import styles from './App.scss';
 
 // components
 import Logo from './Logo/Logo';
-import Nav from './Navigation/Nav';
+import Container from './Container/Container';
+import Navigation from './Navigation/Navigation';
 
 /**
  * Main App component responsible for handling routes, redirection, and managing major state
@@ -18,8 +19,15 @@ class App extends Component {
     super(props)
 
     this.state = {
-      inline: false,
-      mobile: false,
+      // sets the Logo to be inline or stacked
+      inline: true,
+
+      // navigation component props
+      nav: {
+        contentOpen: true
+      },
+
+      // data from the server
       data: {}
     }
   }
@@ -30,7 +38,8 @@ class App extends Component {
       <BrowserRouter>
         <div className={styles.App}>
           <Logo inline={this.state.inline} />
-          <Nav mobile={this.state.mobile} />
+          <Navigation showMenu={!this.state.nav.contentOpen} />
+          <Container />
         </div>
       </BrowserRouter>
     );

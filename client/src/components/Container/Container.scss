@@ -1,0 +1,20 @@
+@import "../../globalSyles/variables";
+
+$margin-mobile: 150px;
+$margin-desktop: 175px;
+$nav-width: 500px;
+
+.Container {
+  height: calc(100vh - #{$margin-mobile} );
+  margin: 25px;
+  padding: 25px;
+  background: #efefef;
+
+  @media screen and (min-width: $screen-l) {
+    height: calc(100vh - #{$margin-desktop} );
+  }
+  
+  @media screen and (min-width: $screen-xl) {
+    width: calc(100% - #{$nav-width});
+  }
+}

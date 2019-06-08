@@ -1,0 +1,25 @@
+@import "../../globalSyles/variables";
+
+.Menu {
+  display: block;
+  width: 50px;
+  line-height: 2.25em;  
+  background: #333;
+  color: $text-white;
+  background: rgba($text-dark, 0.7);
+  border-top-left-radius: 2em;
+  border-bottom-left-radius: 2em;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  position: absolute;
+  top: 15px;
+  font-size: 2em;
+  right: 0;
+  padding-left: 15px;
+  z-index: 200;
+
+  @media screen and (min-width: $screen-xl) {
+    display: none;
+  }
+}

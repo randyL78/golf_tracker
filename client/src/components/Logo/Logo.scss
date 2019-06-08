@@ -7,7 +7,7 @@
   color: $text-white;
   text-align: center;
 
-  @media screen and (min-width: $screen-m) {
+  @media screen and (min-width: $screen-l) {
     text-align: left;
     margin: 25px 0 0 .75em;
   }
@@ -27,7 +27,7 @@
   display: block;
   color: $text-red;
 
-  @media screen and (min-width: $screen-m) {
+  @media screen and (min-width: $screen-l) {
     text-align: left;
     margin-left: 1em;
   }
