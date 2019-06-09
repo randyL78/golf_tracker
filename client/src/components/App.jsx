@@ -28,6 +28,7 @@ class App extends Component {
       // eventually, data from the server
       // for now static data
       data: {
+        currentCourse: 0,
         courses: [
           {
             id: 1,
@@ -52,37 +53,14 @@ class App extends Component {
             name: 'Colonial Downs',
             city: 'Lynchburg',
             state: 'VA'
-          },
-          {
-            id: 5,
-            name: 'Poplar Forest',
-            city: 'Lynchburg',
-            state: 'VA'
-          },
-          {
-            id: 6,
-            name: 'Boonsboro Country Club',
-            city: 'Lynchburg',
-            state: 'VA'
-          },
-          {
-            id: 7,
-            name: 'Poplar Grove',
-            city: 'Lynchburg',
-            state: 'VA'
-          },
-          {
-            id: 8,
-            name: 'Colonial Downs',
-            city: 'Lynchburg',
-            state: 'VA'
-          },
+          }
         ]
       }
     }
 
-    // bind `this` to event listener
+    // bind `this` to event listeners
     this.updateScreenSize = this.updateScreenSize.bind(this);
+    this.handleDeleteCourse = this.handleDeleteCourse.bind(this);
   }
 
   // add event listen to detect window resizing.
@@ -93,7 +71,7 @@ class App extends Component {
     window.addEventListener('resize', this.updateScreenSize);
   }
 
-  // remove the event listener
+  // remove the window resizing event listener
   componentWillUnmount() {
     window.removeEventListener('resize', this.updateScreenSize);
   }
@@ -113,7 +91,6 @@ class App extends Component {
     return screenSize;
   }
 
-
   // update `screenSize` based on browser window width
   updateScreenSize() {
     let screenSize = this.getScreenSize();
@@ -122,6 +99,17 @@ class App extends Component {
       this.setState({
         screenSize
       })
+  }
+
+  // delete the course at the current row
+  handleDeleteCourse(id) {
+    let updatedCourses = this.state.data.courses.filter(course => course.id !== id);
+
+    let data = { ...this.state.data, courses: updatedCourses };
+
+    console.log(data);
+
+    this.setState({ data });
   }
 
   render() {
@@ -133,7 +121,12 @@ class App extends Component {
           <Switch>
             <Route exact path="/home" render={() => <Home screenSize={this.state.screenSize} />} />
 
-            <Route exact path="/courses" render={() => <Courses screenSize={this.state.screenSize} courses={this.state.data.courses} />} />
+            <Route exact path="/courses" render={() =>
+              <Courses
+                screenSize={this.state.screenSize}
+                courses={this.state.data.courses}
+                handleDeleteCourse={this.handleDeleteCourse}
+              />} />
 
             <Route exact path="/statistics" render={() => <Statistics screenSize={this.state.screenSize} />} />
 

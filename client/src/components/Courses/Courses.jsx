@@ -1,5 +1,6 @@
 // dependencies
 import React from 'react';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 // components
@@ -7,7 +8,7 @@ import Container from '../../shared/Container/Container';
 import Logo from '../../shared/Logo/Logo';
 import Navigation from '../../shared/Navigation/Navigation';
 import Title from '../../shared/Title/Title';
-import Row from '../../shared/Row/Row';
+import Row from './CourseRow';
 
 // styles
 import styles from './Courses.scss';
@@ -30,12 +31,18 @@ const Courses = props =>
           <div className={styles.rowContainer}>
             {
               props.courses.map(({ id, name, city, state }) =>
-                <Row key={id} name={name} city={city} state={state} />
+                <Row
+                  key={id}
+                  id={id}
+                  name={name}
+                  city={city}
+                  state={state}
+                  handleDeleteCourse={props.handleDeleteCourse} />
               )
             }
           </div>
           <div className={styles.buttonContainer}>
-            <button className={styles.new}>New</button>
+            <Link to="/courses/new" className={styles.new}>New</Link>
           </div>
         </div>
       }
@@ -48,8 +55,9 @@ Courses.propTypes = {
     id: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
     city: PropTypes.string,
-    state: PropTypes.string
-  }))
+    state: PropTypes.string,
+  })),
+  handleDeleteCourse: PropTypes.func.isRequired
 }
 
 export default Courses;

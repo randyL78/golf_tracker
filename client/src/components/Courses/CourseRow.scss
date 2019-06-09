@@ -1,7 +1,22 @@
-@import "../../globalSyles/variables";
+@import '../../globalSyles/variables';
+
+%span {
+  display: block;
+  box-shadow: -.5px -.5px 1px 0 inset $text-white,
+              .5px .5px 1px 0 inset $text-dark;
+  line-height: 2.25em;
+  padding: 0 15px;
+  transition: box-shadow .3s ease-in-out;
+  background-color: darken($text-white, 2%);
+  border-radius: 1px;
+  overflow: hidden;
+  text-decoration: none;
+  color: $text-dark;
+}
 
 .Row {
   font-family: $font-stack-primary;
+  text-decoration: none;
   display: flex;
   justify-content: space-between;
   padding: 0;
@@ -14,28 +29,22 @@
   &:last-of-type {
     box-shadow: 0 3px 5px 0 $text-dark;
   }
-
-  span {
-    display: block;
-    box-shadow: -.5px -.5px 1px 0 inset $text-white,
-                .5px .5px 1px 0 inset $text-dark;
-    line-height: 2.25em;
-    padding: 0 15px;
-    transition: box-shadow .3s ease-in-out;
-    background-color: darken($text-white, 2%);
-    border-radius: 1px;
-    overflow: hidden;
-  }
-
   .name {
+    @extend %span;
     flex: 1 0 40%;
   }
 
   .city {
+    @extend %span;
     flex: 1 1 40%;
   }
 
+  .state {
+    @extend %span;
+  }
+
   .delete {
+    @extend %span;
     background-color: $text-red;
     color: $text-white;
     border: none;
