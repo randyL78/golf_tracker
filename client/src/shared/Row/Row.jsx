@@ -7,11 +7,11 @@ import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 // styles
 import styles from './Row.scss';
 
-const Row = props =>
+const Row = ({ name, city, state }) =>
   <p className={styles.Row}>
-    <span className={styles.name}>Poplar Forest</span>
-    <span className={styles.city}>Lynchburg</span>
-    <span className={styles.state}>VA</span>
+    <span className={styles.name}>{name}</span>
+    <span className={styles.city}>{city}</span>
+    <span className={styles.state}>{state}</span>
     <button className={styles.delete}>
       <FontAwesomeIcon icon={faTrashAlt} />
     </button>

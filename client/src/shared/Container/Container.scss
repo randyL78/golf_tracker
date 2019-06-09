@@ -7,10 +7,11 @@ $nav-width: 500px;
 .Container {
   height: calc(100vh - #{$margin-mobile} );
   margin: 25px;
-  background: #efefef;
+  background-color: darken($text-white, 2%);
   border-radius: 10px;
-  position: relative;
   overflow: hidden;
+  position: relative;
+  
 
   @media screen and (min-width: $screen-l) {
     height: calc(100vh - #{$margin-desktop} );

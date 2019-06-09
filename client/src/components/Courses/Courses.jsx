@@ -28,11 +28,14 @@ const Courses = props =>
         <div className={styles.Courses}>
           <Title title="Courses" />
           <div className={styles.rowContainer}>
-            <Row />
-            <Row />
-            <Row />
-            <Row />
-            <Row />
+            {
+              props.courses.map(({ id, name, city, state }) =>
+                <Row key={id} name={name} city={city} state={state} />
+              )
+            }
+          </div>
+          <div className={styles.buttonContainer}>
+            <button className={styles.new}>New</button>
           </div>
         </div>
       }
@@ -40,7 +43,13 @@ const Courses = props =>
   </div>
 
 Courses.propTypes = {
-  screenSize: PropTypes.oneOf(['small', 'medium', 'large'])
+  screenSize: PropTypes.oneOf(['small', 'medium', 'large']),
+  courses: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    name: PropTypes.string.isRequired,
+    city: PropTypes.string,
+    state: PropTypes.string
+  }))
 }
 
 export default Courses;

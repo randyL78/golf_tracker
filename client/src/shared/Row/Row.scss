@@ -11,6 +11,10 @@
     cursor: pointer;
    }
 
+  &:last-of-type {
+    box-shadow: 0 3px 5px 0 $text-dark;
+  }
+
   span {
     display: block;
     box-shadow: -.5px -.5px 1px 0 inset $text-white,
@@ -19,14 +23,16 @@
     padding: 0 15px;
     transition: box-shadow .3s ease-in-out;
     background-color: darken($text-white, 2%);
+    border-radius: 1px;
+    overflow: hidden;
   }
 
   .name {
-    flex: 1 0 45%;
+    flex: 1 0 40%;
   }
 
   .city {
-    flex: 1 1 45%;
+    flex: 1 1 40%;
   }
 
   .delete {

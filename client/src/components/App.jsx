@@ -30,10 +30,53 @@ class App extends Component {
       data: {
         courses: [
           {
+            id: 1,
             name: 'Poplar Forest',
             city: 'Lynchburg',
             state: 'VA'
-          }
+          },
+          {
+            id: 2,
+            name: 'Boonsboro Country Club',
+            city: 'Lynchburg',
+            state: 'VA'
+          },
+          {
+            id: 3,
+            name: 'Poplar Grove',
+            city: 'Lynchburg',
+            state: 'VA'
+          },
+          {
+            id: 4,
+            name: 'Colonial Downs',
+            city: 'Lynchburg',
+            state: 'VA'
+          },
+          {
+            id: 5,
+            name: 'Poplar Forest',
+            city: 'Lynchburg',
+            state: 'VA'
+          },
+          {
+            id: 6,
+            name: 'Boonsboro Country Club',
+            city: 'Lynchburg',
+            state: 'VA'
+          },
+          {
+            id: 7,
+            name: 'Poplar Grove',
+            city: 'Lynchburg',
+            state: 'VA'
+          },
+          {
+            id: 8,
+            name: 'Colonial Downs',
+            city: 'Lynchburg',
+            state: 'VA'
+          },
         ]
       }
     }
@@ -90,7 +133,7 @@ class App extends Component {
           <Switch>
             <Route exact path="/home" render={() => <Home screenSize={this.state.screenSize} />} />
 
-            <Route exact path="/courses" render={() => <Courses screenSize={this.state.screenSize} />} />
+            <Route exact path="/courses" render={() => <Courses screenSize={this.state.screenSize} courses={this.state.data.courses} />} />
 
             <Route exact path="/statistics" render={() => <Statistics screenSize={this.state.screenSize} />} />
 
