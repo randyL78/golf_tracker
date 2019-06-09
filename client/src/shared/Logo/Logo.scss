@@ -6,6 +6,7 @@
   font-family: $font-stack-headlines;
   color: $text-white;
   text-align: center;
+  font-size: 3em;
 
   @media screen and (min-width: $screen-l) {
     text-align: left;
@@ -15,11 +16,12 @@
 
 .Logo {
   @extend %Logo;
-  font-size: 4em;
+  @media screen and (min-width: $screen-l) {
+    font-size: 4em;
+  }
 
   &Inline {
-    @extend %Logo;
-    font-size: 3em;
+    @extend %Logo;  
   }
 }
 

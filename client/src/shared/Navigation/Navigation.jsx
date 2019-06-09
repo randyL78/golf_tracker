@@ -18,7 +18,7 @@ class Navigation extends Component {
     super(props);
 
     this.state = {
-      isOpen: true
+      isOpen: false
     }
 
     // bind `this` on the callback

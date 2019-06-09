@@ -1,0 +1,48 @@
+@import "../../globalSyles/variables";
+
+.Row {
+  font-family: $font-stack-primary;
+  display: flex;
+  justify-content: space-between;
+  padding: 0;
+  margin: 0;
+
+  &:hover {
+    cursor: pointer;
+   }
+
+  span {
+    display: block;
+    box-shadow: -.5px -.5px 1px 0 inset $text-white,
+                .5px .5px 1px 0 inset $text-dark;
+    line-height: 2.25em;
+    padding: 0 15px;
+    transition: box-shadow .3s ease-in-out;
+    background-color: darken($text-white, 2%);
+  }
+
+  .name {
+    flex: 1 0 45%;
+  }
+
+  .city {
+    flex: 1 1 45%;
+  }
+
+  .delete {
+    background-color: $text-red;
+    color: $text-white;
+    border: none;
+    outline: none;
+    box-shadow: .5px .5px 1px .5px inset darken($text-red, 25%),
+    -.5px -.5px 1px .5px inset lighten($text-red, 25%);
+    cursor: pointer;
+    transition: background-color .3s ease-in-out,
+                color .3s ease-in-out;
+
+    &:hover {
+      background-color: darken($text-red, 25%);
+      color: darken($text-white, 25%);
+    }
+  }
+}
