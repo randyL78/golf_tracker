@@ -2,6 +2,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+// other container components
+import ButtonContainer from './ButtonContainer';
+import FormContainer from './FormContainer';
+import RowContainer from './Row.Container';
+
 // styles
 import styles from './Container.scss';
 
@@ -23,3 +28,5 @@ Container.propTypes = {
 }
 
 export default Container;
+
+export { ButtonContainer, FormContainer, RowContainer };

@@ -11,9 +11,9 @@ import styles from './ButtonContainer.scss';
  * @param {children} props 
  */
 const ButtonContainer = ({ children }) =>
-  <main className={styles.ButtonContainer}>
+  <div className={styles.ButtonContainer}>
     {children}
-  </main>
+  </div>
 
 ButtonContainer.propTypes = {
   children: PropTypes.oneOfType([

@@ -1,6 +1,7 @@
 @import "../../globalSyles/variables";
 
 .Title {
+  background-color: darken($text-white, 2%);
   box-shadow: -2px -2px 3px 0 inset $text-dark,
               2px 2px 3px 0 $text-dark;
   border-radius: 10px 10px 2px 2px;

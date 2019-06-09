@@ -11,9 +11,9 @@ import styles from './RowContainer.scss';
  * @param {children} props 
  */
 const RowContainer = ({ children }) =>
-  <main className={styles.RowContainer}>
+  <div className={styles.RowContainer}>
     {children}
-  </main>
+  </div>
 
 RowContainer.propTypes = {
   children: PropTypes.oneOfType([

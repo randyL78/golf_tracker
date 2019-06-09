@@ -4,8 +4,7 @@ import PropTypes from 'prop-types';
 
 // components
 import Container from '../../shared/Containers/Container';
-import Logo from '../../shared/Logo/Logo';
-import Navigation from '../../shared/Navigation/Navigation';
+import { Logo, Navigation } from '../../shared/Layout';
 
 // styles
 import styles from './ErrorPage.scss';

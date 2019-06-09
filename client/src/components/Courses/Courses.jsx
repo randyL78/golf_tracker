@@ -2,20 +2,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlusSquare } from '@fortawesome/free-solid-svg-icons';
 
 // components
-import ButtonContainer from '../../shared/Containers/ButtonContainer';
-import Container from '../../shared/Containers/Container';
-import Logo from '../../shared/Logo/Logo';
-import Navigation from '../../shared/Navigation/Navigation';
-import Title from '../../shared/Title/Title';
+import { LinkButton } from "../../shared/Buttons/Button";
+import { Logo, Navigation, Title } from '../../shared/Layout';
 import Row from './CourseRow';
-import RowContainer from '../../shared/Containers/Row.Container';
+import Container, { ButtonContainer, RowContainer } from '../../shared/Containers/Container';
 
 // styles
 import styles from './Courses.scss';
-
-
 
 /**
  * Courses.js
@@ -42,7 +39,9 @@ const Courses = ({ screenSize, courses, handleDeleteCourse }) =>
         }
       </RowContainer>
       <ButtonContainer>
-        <Link to="/courses/new" className={styles.new}>New</Link>
+        <LinkButton to="/courses/new" text="New" >
+          <FontAwesomeIcon icon={faPlusSquare} />
+        </LinkButton>
       </ButtonContainer>
     </Container>
   </div>
