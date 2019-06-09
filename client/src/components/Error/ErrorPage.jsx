@@ -3,7 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 // components
-import Container from '../../shared/Container/Container';
+import Container from '../../shared/Containers/Container';
 import Logo from '../../shared/Logo/Logo';
 import Navigation from '../../shared/Navigation/Navigation';
 

@@ -11,7 +11,7 @@ import styles from './CourseRow.scss';
 /**
  * CourseRow
  * Displays the basic information of a single course
- * @param {*} param
+ * @param { id, name, city, state, handleDeleteCourse } props
  */
 const Row = ({ id, name, city, state, handleDeleteCourse }) =>
   <p className={styles.Row}>

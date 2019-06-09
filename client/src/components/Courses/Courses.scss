@@ -1,43 +1,17 @@
 @import "../../globalSyles/variables";
 
-$margin-mobile: 250px;
 
-.Courses {
-  color: $text-dark;
-  height: calc(100vh - #{$margin-mobile} );
-  .rowContainer {
-    height: 100%;
-    overflow-y: scroll;
-    overflow-x: auto;
-
+  .new {
+    font-family: $font-stack-links;
+    text-transform: uppercase;
+    text-decoration: none;
+    text-align: center;
+    line-height: 2.5em;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    background-color: $text-dark;
+    color: $text-white;
+    border-radius: 5px;
+    flex-basis: 150px;
   }
-
-  .buttonContainer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    padding: 5px;
-    background-color: darken($text-white, 2%);
-    box-shadow: 2px 2px 3px 0 inset $text-white,
-                -2px -2px 3px 0 inset $text-dark,
-                2px 2px 3px 0 $text-dark;
-    border-radius: 2px 2px 10px 10px; 
-
-    .new {
-      font-family: $font-stack-links;
-      text-transform: uppercase;
-      text-decoration: none;
-      text-align: center;
-      line-height: 2.5em;
-      border: none;
-      outline: none;
-      cursor: pointer;
-      background-color: $text-dark;
-      color: $text-white;
-      border-radius: 5px;
-      flex-basis: 150px;
-    }
-  }
-}

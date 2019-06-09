@@ -4,11 +4,13 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 // components
-import Container from '../../shared/Container/Container';
+import ButtonContainer from '../../shared/Containers/ButtonContainer';
+import Container from '../../shared/Containers/Container';
 import Logo from '../../shared/Logo/Logo';
 import Navigation from '../../shared/Navigation/Navigation';
 import Title from '../../shared/Title/Title';
 import Row from './CourseRow';
+import RowContainer from '../../shared/Containers/Row.Container';
 
 // styles
 import styles from './Courses.scss';
@@ -18,34 +20,30 @@ import styles from './Courses.scss';
 /**
  * Courses.js
  * Displays a list of Course information
- * @param {*} props 
+ * @param {screenSize, courses, handleDeleteCourse} props 
  */
-const Courses = props =>
+const Courses = ({ screenSize, courses, handleDeleteCourse }) =>
   <div>
     <Logo inline={true} />
-    <Navigation showMenu={props.screenSize !== 'large'} />
+    <Navigation showMenu={screenSize !== 'large'} />
     <Container >
-      {
-        <div className={styles.Courses}>
-          <Title title="Courses" />
-          <div className={styles.rowContainer}>
-            {
-              props.courses.map(({ id, name, city, state }) =>
-                <Row
-                  key={id}
-                  id={id}
-                  name={name}
-                  city={city}
-                  state={state}
-                  handleDeleteCourse={props.handleDeleteCourse} />
-              )
-            }
-          </div>
-          <div className={styles.buttonContainer}>
-            <Link to="/courses/new" className={styles.new}>New</Link>
-          </div>
-        </div>
-      }
+      <Title title="Courses" />
+      <RowContainer className={styles.rowContainer}>
+        {
+          courses.map(({ id, name, city, state }) =>
+            <Row
+              key={id}
+              id={id}
+              name={name}
+              city={city}
+              state={state}
+              handleDeleteCourse={handleDeleteCourse} />
+          )
+        }
+      </RowContainer>
+      <ButtonContainer>
+        <Link to="/courses/new" className={styles.new}>New</Link>
+      </ButtonContainer>
     </Container>
   </div>
 

@@ -8,11 +8,11 @@ import styles from './Container.scss';
 /**
  * Container.js
  * renders the content area of the routes
- * @param {*} props 
+ * @param {children} props 
  */
-const Container = props =>
+const Container = ({ children }) =>
   <main className={styles.Container}>
-    {props.children}
+    {children}
   </main>
 
 Container.propTypes = {

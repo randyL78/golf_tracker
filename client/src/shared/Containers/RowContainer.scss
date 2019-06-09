@@ -1,0 +1,10 @@
+@import "../../globalSyles/variables";
+
+$margin-mobile: 275px;
+
+.RowContainer {
+  height: calc(100vh - #{$margin-mobile} );
+  overflow-y: scroll;
+  overflow-x: auto;
+
+}

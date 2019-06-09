@@ -107,8 +107,6 @@ class App extends Component {
 
     let data = { ...this.state.data, courses: updatedCourses };
 
-    console.log(data);
-
     this.setState({ data });
   }
 
