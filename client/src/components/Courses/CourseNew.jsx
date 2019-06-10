@@ -68,7 +68,7 @@ class CourseEdit extends Component {
   render() {
     let { name, address, city, state, zip, nameValid } = this.state;
     return (
-      <div className={styles.CourseEdit}>
+      <div className={styles.CourseNew}>
         <Logo inline={true} />
         <Navigation showMenu={this.props.screenSize !== 'large'} />
         <Container >
