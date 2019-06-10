@@ -16,6 +16,7 @@ import Courses from './Courses/Courses';
 import CourseEdit from './Courses/CourseNew';
 import Rounds from './Rounds/Rounds';
 import Statistics from './Statistics/Statistics';
+import CourseDisplay from './Courses/CourseDisplay.jsx';
 
 
 /**
@@ -34,6 +35,7 @@ class App extends Component {
     this.updateScreenSize = this.updateScreenSize.bind(this);
     this.handleDeleteCourse = this.handleDeleteCourse.bind(this);
     this.handleSaveCourse = this.handleSaveCourse.bind(this);
+    this.handleDeleteCourseAndRedirect = this.handleDeleteCourseAndRedirect.bind(this);
   }
 
   /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -87,6 +89,11 @@ class App extends Component {
    *          Course Related Methods
    * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
 
+  // get the details of a specific course
+  getCourse(id) {
+    return this.state.data.courses.find(course => course.id === id);
+  }
+
   // delete the course at the current row
   handleDeleteCourse(id) {
     let updatedCourses = this.state.data.courses.filter(course => course.id !== id);
@@ -108,6 +115,12 @@ class App extends Component {
         ]
       }
     }))
+
+    history.push('/courses');
+  }
+
+  handleDeleteCourseAndRedirect(id, history) {
+    this.handleDeleteCourse(id)
 
     history.push('/courses');
   }
@@ -141,12 +154,18 @@ class App extends Component {
             />
 
             {/* Display a specific course */}
-            <Route exact path="/courses/:courseId" render={() =>
-              <CourseEdit screenSize={this.state.screenSize} />} />
+            <Route exact path="/courses/:courseId" render={props =>
+              <CourseDisplay
+                handleDeleteCourse={this.handleDeleteCourseAndRedirect}
+                screenSize={this.state.screenSize}
+                history={props.history}
+                course={this.getCourse(props.match.params.courseId)}
+              />} />
 
             {/* statistics routes */}
             <Route exact path="/statistics" render={() => <Statistics screenSize={this.state.screenSize} />} />
 
+            {/* round routes */}
             <Route exact path="/rounds" render={() => <Rounds screenSize={this.state.screenSize} />} />
 
             {/* If all else fails, render the error page */}

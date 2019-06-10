@@ -9,28 +9,28 @@ export default {
     currentCourse: 0,
     courses: [
       {
-        id: 1,
+        id: "1",
         name: 'Poplar Forest',
         address: '123 Bramblewood Pl',
         city: 'Lynchburg',
         state: 'VA'
       },
       {
-        id: 2,
+        id: "2",
         name: 'Boonsboro Country Club',
         address: '123 Bramblewood Pl',
         city: 'Lynchburg',
         state: 'VA'
       },
       {
-        id: 3,
+        id: "3",
         name: 'Poplar Grove',
         address: '123 Bramblewood Pl',
         city: 'Lynchburg',
         state: 'VA'
       },
       {
-        id: 4,
+        id: "4",
         name: 'Colonial Downs',
         address: '123 Bramblewood Pl',
         city: 'Lynchburg',
