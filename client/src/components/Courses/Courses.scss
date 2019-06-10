@@ -1,0 +1,17 @@
+@import "../../globalSyles/variables";
+
+
+  .new {
+    font-family: $font-stack-links;
+    text-transform: uppercase;
+    text-decoration: none;
+    text-align: center;
+    line-height: 2.5em;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    background-color: $text-dark;
+    color: $text-white;
+    border-radius: 5px;
+    flex-basis: 150px;
+  }

@@ -1,0 +1,45 @@
+@import '../../globalSyles/variables';
+
+%button {
+  font-family: $font-stack-links;
+  text-transform: uppercase;
+  text-decoration: none;
+  text-align: center;
+  line-height: 2.5em;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  color: $text-white;
+  border-radius: 5px;
+  flex-basis: 100px;
+  margin: 0 15px 0;
+  @media screen and (min-width: $screen-xs){
+    flex-basis: 150px;
+  }
+}
+
+.Button {
+  &Default {
+    @extend %button;
+    background-color: $text-dark;
+  }
+
+  &Warning {
+    @extend %button;
+    background-color: $text-red;
+  }
+
+  &Info {
+    @extend %button;
+    background-color: $gray;
+  }
+  &Text {
+    display: none;
+
+    @media screen and (min-width: $screen-xs){
+      display: inline;
+      margin: 0 5px;
+    }
+
+  }
+}

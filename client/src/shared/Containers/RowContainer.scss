@@ -1,0 +1,14 @@
+@import "../../globalSyles/variables";
+
+$margin-mobile: 250px;
+$margin-desktop: 275px;
+
+.RowContainer {
+  height: calc(100vh - #{$margin-mobile} );
+  overflow-y: scroll;
+  overflow-x: auto;
+  
+  @media screen and (min-width: $screen-l) {
+    height: calc(100vh - #{$margin-desktop} );
+  }
+}
