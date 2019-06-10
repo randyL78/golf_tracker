@@ -41,6 +41,7 @@
 
   .state {
     @extend %span;
+    flex: 0 0 20px;
   }
 
   .delete {

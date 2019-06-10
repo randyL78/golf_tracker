@@ -49,7 +49,10 @@ const Courses = ({ screenSize, courses, handleDeleteCourse }) =>
 Courses.propTypes = {
   screenSize: PropTypes.oneOf(['small', 'medium', 'large']),
   courses: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.number.isRequired,
+    id: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number
+    ]).isRequired,
     name: PropTypes.string.isRequired,
     city: PropTypes.string,
     state: PropTypes.string,

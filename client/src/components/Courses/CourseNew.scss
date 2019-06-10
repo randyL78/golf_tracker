@@ -12,18 +12,26 @@
     font-weight: bold;
   }
 
-  input {
+  input, select {
+    max-width: 500px;
     margin-top: .25em;
     line-height: 2em;
     border-radius: 5px;
     outline: none;
+    background-color: $text-white;
+    height: 2em;
+    max-height: 2em;
   }
 
-  .required {
+  span.required {
     color: $text-red;
   }
 
+  input.required {
+    border: 2px solid $text-red;
+  }
+
   .half {
-    flex-basis: 45%;
+    max-width: 200px;
   }
 }

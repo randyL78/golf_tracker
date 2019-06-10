@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 
+
 // static data
 import initialState from './InitialState.js';
 
@@ -12,7 +13,7 @@ import styles from './App.scss';
 import ErrorPage from './Error/ErrorPage';
 import Home from './Home/Home';
 import Courses from './Courses/Courses';
-import CourseEdit from './Courses/CourseEdit';
+import CourseEdit from './Courses/CourseNew';
 import Rounds from './Rounds/Rounds';
 import Statistics from './Statistics/Statistics';
 
@@ -32,6 +33,7 @@ class App extends Component {
     // bind `this` to event listeners
     this.updateScreenSize = this.updateScreenSize.bind(this);
     this.handleDeleteCourse = this.handleDeleteCourse.bind(this);
+    this.handleSaveCourse = this.handleSaveCourse.bind(this);
   }
 
   /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -95,8 +97,19 @@ class App extends Component {
   }
 
   // handle saving a new course
-  handleSaveCourse() {
-    console.log('Hooray! I\'m saved!');
+  handleSaveCourse(newCourse, history) {
+
+    this.setState(prevState => ({
+      data: {
+        ...prevState.data,
+        courses: [
+          ...prevState.data.courses,
+          newCourse
+        ]
+      }
+    }))
+
+    history.push('/courses');
   }
 
 
@@ -120,8 +133,9 @@ class App extends Component {
               />} />
 
             {/* Create a new course */}
-            <Route exact path="/courses/new" render={() =>
+            <Route exact path="/courses/new" render={props =>
               <CourseEdit
+                history={props.history}
                 screenSize={this.state.screenSize}
                 handleSaveCourse={this.handleSaveCourse} />}
             />
