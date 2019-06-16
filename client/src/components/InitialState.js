@@ -6,6 +6,8 @@ export default {
   // eventually, data from the server
   // for now static data
   data: {
+    currentRound: {},
+    rounds: [].push,
     currentCourse: 0,
     courses: [
       {

@@ -14,7 +14,7 @@ import ErrorPage from './Error/ErrorPage';
 import Home from './Home/Home';
 import Courses from './Courses/Courses';
 import CourseEdit from './Courses/CourseNew';
-import Rounds from './Rounds/Rounds';
+import Rounds from './Rounds/StartRound';
 import Statistics from './Statistics/Statistics';
 import CourseDisplay from './Courses/CourseDisplay.jsx';
 
@@ -35,6 +35,7 @@ class App extends Component {
     this.updateScreenSize = this.updateScreenSize.bind(this);
     this.handleDeleteCourse = this.handleDeleteCourse.bind(this);
     this.handleSaveCourse = this.handleSaveCourse.bind(this);
+    this.handleStartRound = this.handleStartRound.bind(this);
     this.handleDeleteCourseAndRedirect = this.handleDeleteCourseAndRedirect.bind(this);
   }
 
@@ -125,8 +126,28 @@ class App extends Component {
     history.push('/courses');
   }
 
+  /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+   *          Round Related Methods
+   * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
+
+  // handle saving a new round
+  handleStartRound(courseId, history) {
+    this.setState(prevState => ({
+      data: {
+        ...prevState.data,
+        currentRound: {
+          courseId
+        }
+      }
+    }));
+
+    history.push('/rounds/start/overview');
+  }
 
 
+  /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+   *         Render the App
+   * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
   render() {
     return (
       <BrowserRouter>
@@ -166,10 +187,23 @@ class App extends Component {
             <Route exact path="/statistics" render={() => <Statistics screenSize={this.state.screenSize} />} />
 
             {/* round routes */}
-            <Route exact path="/rounds" render={() => <Rounds screenSize={this.state.screenSize} />} />
+
+            {/* start a new round */}
+            <Route exact path="/rounds/start" render={props =>
+              <Rounds
+                screenSize={this.state.screenSize}
+                courses={this.state.data.courses}
+                history={props.history}
+                handleStartRound={this.handleStartRound}
+              />}
+            />
 
             {/* If all else fails, render the error page */}
-            <Route render={() => <ErrorPage screenSize={this.state.screenSize} />} />
+            <Route render={() =>
+              <ErrorPage
+                screenSize={this.state.screenSize}
+              />}
+            />
           </Switch>
 
         </div>
