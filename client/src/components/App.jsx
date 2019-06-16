@@ -13,7 +13,7 @@ import styles from './App.scss';
 import ErrorPage from './Error/ErrorPage';
 import Home from './Home/Home';
 import Courses from './Courses/Courses';
-import CourseEdit from './Courses/CourseNew';
+import CourseNew from './Courses/CourseNew';
 import Rounds from './Rounds/StartRound';
 import Statistics from './Statistics/Statistics';
 import CourseDisplay from './Courses/CourseDisplay.jsx';
@@ -36,6 +36,7 @@ class App extends Component {
     this.handleDeleteCourse = this.handleDeleteCourse.bind(this);
     this.handleSaveCourse = this.handleSaveCourse.bind(this);
     this.handleStartRound = this.handleStartRound.bind(this);
+    this.handleUpdateCourse = this.handleUpdateCourse.bind(this);
     this.handleDeleteCourseAndRedirect = this.handleDeleteCourseAndRedirect.bind(this);
   }
 
@@ -120,6 +121,22 @@ class App extends Component {
     history.push('/courses');
   }
 
+  // handle updating a course
+  handleUpdateCourse(updatedCourse, history) {
+
+    let updatedCourses = this.state.data.courses.map(course =>
+      (course.id === updatedCourse.id) ? updatedCourse : course)
+
+    this.setState(prevState => ({
+      data: {
+        ...prevState.data,
+        courses: updatedCourses
+      }
+    }))
+
+    history.push('/courses');
+  }
+
   handleDeleteCourseAndRedirect(id, history) {
     this.handleDeleteCourse(id)
 
@@ -168,7 +185,7 @@ class App extends Component {
 
             {/* Create a new course */}
             <Route exact path="/courses/new" render={props =>
-              <CourseEdit
+              <CourseNew
                 history={props.history}
                 screenSize={this.state.screenSize}
                 handleSaveCourse={this.handleSaveCourse} />}
@@ -181,6 +198,16 @@ class App extends Component {
                 screenSize={this.state.screenSize}
                 history={props.history}
                 course={this.getCourse(props.match.params.courseId)}
+              />} />
+
+            {/* edit an existing course */}
+            <Route exact path="/courses/:courseId/edit" render={props =>
+              <CourseNew
+                handleDeleteCourse={this.handleDeleteCourseAndRedirect}
+                screenSize={this.state.screenSize}
+                history={props.history}
+                currentCourse={this.getCourse(props.match.params.courseId)}
+                handleSaveCourse={this.handleUpdateCourse}
               />} />
 
             {/* statistics routes */}

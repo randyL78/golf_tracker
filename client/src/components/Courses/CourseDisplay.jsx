@@ -21,7 +21,7 @@ const CourseDisplay = ({ course, screenSize, handleDeleteCourse, history }) =>
     <Logo inline={true} />
     <Navigation showMenu={screenSize !== 'large'} />
     <Container >
-      <Title title="Course:" />
+      <Title title="Course" />
       <FormContainer>
         <label >
           <span>Course Name </span>

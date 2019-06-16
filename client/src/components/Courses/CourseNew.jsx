@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBan, faSave } from '@fortawesome/free-solid-svg-icons';
+import { faBan, faSave, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import uuidv4 from 'uuid/v4';
 
 // components
@@ -25,6 +25,7 @@ class CourseEdit extends Component {
     super(props)
 
     this.state = {
+      isEditing: false,
       name: '',
       city: '',
       address: '',
@@ -36,14 +37,34 @@ class CourseEdit extends Component {
     this.handleValidation = this.handleValidation.bind(this);
   }
 
+
+  // if a course is being edited, set the state by it
+  // TODO: this is not a very performant solution because it requires
+  // a second render initially on mounting. Research alternatives
+  componentDidMount() {
+    if (this.props.currentCourse) {
+      let { id, name, city, address, state, zip } = this.props.currentCourse;
+
+      this.setState(() => ({
+        isEditing: true,
+        id,
+        name,
+        city: city || '',
+        address: address || '',
+        state: state || '',
+        zip: zip || ''
+      }));
+    }
+  }
+
   // TODO: UNSAFE OPERATION! In future iteration make sure to sanitize
   // the data before storing it!
   handleValidation() {
-    let { name, address, city, state, zip } = this.state;
+    let { isEditing, name, address, city, state, zip, id } = this.state;
     let { history } = this.props;
     if (name) {
       let newCourse = {
-        id: uuidv4(),
+        id: isEditing ? id : uuidv4(),
         name,
         address,
         city,
@@ -66,13 +87,14 @@ class CourseEdit extends Component {
   }
 
   render() {
-    let { name, address, city, state, zip, nameValid } = this.state;
+    let { isEditing, id, name, address, city, state, zip, nameValid } = this.state;
+    let { handleDeleteCourse, history } = this.props;
     return (
       <div className={styles.CourseNew}>
         <Logo inline={true} />
         <Navigation showMenu={this.props.screenSize !== 'large'} />
         <Container >
-          <Title title="New Course" />
+          <Title title={`${isEditing ? "Edit" : "New"} Course`} />
           <FormContainer>
             <label >
               <span>Course Name <span className={styles.required}>
@@ -80,6 +102,7 @@ class CourseEdit extends Component {
               </span></span>
               <input
                 name="name"
+                type="text"
                 className={nameValid ? "" : styles.required}
                 required
                 value={name}
@@ -90,6 +113,7 @@ class CourseEdit extends Component {
               <span>Address</span>
               <input
                 name="address"
+                type="text"
                 value={address}
                 onChange={e => this.handleInputChange(e.target.value, "address")}
               />
@@ -97,6 +121,7 @@ class CourseEdit extends Component {
             <label >
               <span>City</span>
               <input
+                type="text"
                 name="city"
                 value={city}
                 onChange={e => this.handleInputChange(e.target.value, "city")}
@@ -164,6 +189,7 @@ class CourseEdit extends Component {
             <label >
               <span>ZipCode</span>
               <input
+                type="text"
                 name="zip"
                 value={zip}
                 className={styles.half}
@@ -172,11 +198,22 @@ class CourseEdit extends Component {
             </label>
           </FormContainer>
           <ButtonContainer>
+            {isEditing ?
+              <Button
+                text="Delete"
+                style="Warning"
+                handleOnClick={() => handleDeleteCourse(id, history)}
+              >
+                <FontAwesomeIcon icon={faTrashAlt} />
+              </Button>
+              :
+              null
+            }
             <LinkButton to="/courses" style="Info" text="Cancel" >
               <FontAwesomeIcon icon={faBan} />
             </LinkButton>
             <Button
-              text="Save"
+              text={this.state.isEditing ? "Update" : "Save"}
               handleOnClick={this.handleValidation}
             >
               <FontAwesomeIcon icon={faSave} />
