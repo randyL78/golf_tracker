@@ -333,7 +333,7 @@ class App extends Component {
             }
             />
 
-            {/* Not found error route */}
+            {/* Manually directed "Not found" error route */}
             <Route path="/404" render={() =>
               <ErrorPage
                 screenSize={this.state.screenSize}
@@ -341,8 +341,13 @@ class App extends Component {
             />
 
 
-            {/* If all else fails, redirect to the error route */}
-            <Route render={() => <Redirect to="/404" />} />
+            {/* If all else fails, render the error component */}
+            <Route render={() =>
+              <ErrorPage
+                screenSize={this.state.screenSize}
+              />}
+
+            />
           </Switch>
 
         </div>

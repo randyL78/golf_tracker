@@ -39,7 +39,8 @@ class ScoreHole extends Component {
         number: currentHole.number,
         par: currentHole.par || 0,
         strokes: currentHole.strokes || 0,
-        putts: currentHole.putts || 0
+        putts: currentHole.putts || 0,
+        fairway: currentHole.fairway || "On Target"
       }
     })
 
@@ -54,7 +55,8 @@ class ScoreHole extends Component {
           number: currentHole.number,
           par: currentHole.par || 0,
           strokes: currentHole.strokes || 0,
-          putts: currentHole.putts || 0
+          putts: currentHole.putts || 0,
+          fairway: currentHole.fairway || "On Target"
         }
       })
     }
@@ -71,11 +73,20 @@ class ScoreHole extends Component {
     }));
   }
 
-  NextHole = () => {
+  // set the maximum value for putts
+  maxPutts = () => {
+    const { strokes } = this.state.currentHole;
+    return strokes > 0 ? strokes - 1 : 0;
+  }
+
+  // handle saving current hole and redirecting to the next
+  nextHole = () => {
     const { number, history, handleNextHole } = this.props;
     const { currentHole } = this.state;
     handleNextHole(number, history, currentHole)
   }
+
+
 
   render() {
     const { currentHole } = this.state
@@ -112,7 +123,7 @@ class ScoreHole extends Component {
                     <input
                       type="number"
                       min="0"
-                      max="6"
+                      max="14"
                       value={strokes}
                       onChange={({ target }) =>
                         this.handleNumberChange(target.value, "strokes")}
@@ -122,19 +133,23 @@ class ScoreHole extends Component {
                     <input
                       type="number"
                       min="0"
-                      max="6"
+                      max={this.maxPutts()}
                       value={putts}
                       onChange={({ target }) =>
                         this.handleNumberChange(target.value, "putts")}
                     />
                   </td>
                   <td>
-                    <select>
-                      <option>On Target</option>
-                      <option>Left</option>
-                      <option>Right</option>
-                      <option>Long</option>
-                      <option>Short</option>
+                    <select
+                      value={fairway}
+                      onChange={({ target }) =>
+                        this.handleNumberChange(target.value, "fairway")}
+                    >
+                      <option value="On Target">On Target</option>
+                      <option value="Left">Left</option>
+                      <option value="Right">Right</option>
+                      <option value="Long">Long</option>
+                      <option value="Short">Short</option>
                     </select>
                   </td>
                 </tr>
@@ -145,7 +160,7 @@ class ScoreHole extends Component {
           <ButtonContainer>
             <Button
               text="Next"
-              handleOnClick={this.NextHole}
+              handleOnClick={this.nextHole}
             />
           </ButtonContainer>
         </Container>
