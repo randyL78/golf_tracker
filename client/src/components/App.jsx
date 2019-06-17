@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 
 
+
+
 // TODO: Link to server/database via proxy
 // TODO: Add Redux Store to manage state
 // static data, later to be replaced with call to backend database
@@ -98,13 +100,13 @@ class App extends Component {
    * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
 
   // get the details of a specific course
-  getCourse(id) {
-    return this.state.data.courses.find(course => course.id === id);
+  getCourse(slug) {
+    return this.state.data.courses.find(course => course.slug === slug);
   }
 
   // delete the course at the current row
-  handleDeleteCourse(id) {
-    let updatedCourses = this.state.data.courses.filter(course => course.id !== id);
+  handleDeleteCourse(slug) {
+    let updatedCourses = this.state.data.courses.filter(course => course.slug !== slug);
 
     let data = { ...this.state.data, courses: updatedCourses };
 
@@ -113,6 +115,10 @@ class App extends Component {
 
   // handle saving a new course
   handleSaveCourse(newCourse, history) {
+
+    if (this.getCourse(newCourse.slug)) {
+      return false;
+    }
 
     this.setState(prevState => ({
       data: {
@@ -129,6 +135,10 @@ class App extends Component {
 
   // handle updating a course
   handleUpdateCourse(updatedCourse, history) {
+    const existingCourse = this.getCourse(updatedCourse.slug);
+    if (existingCourse && existingCourse.id !== updatedCourse.id) {
+      return false;
+    }
 
     let updatedCourses = this.state.data.courses.map(course =>
       (course.id === updatedCourse.id) ? updatedCourse : course)
@@ -143,8 +153,8 @@ class App extends Component {
     history.push('/courses');
   }
 
-  handleDeleteCourseAndRedirect(id, history) {
-    this.handleDeleteCourse(id)
+  handleDeleteCourseAndRedirect(slug, history) {
+    this.handleDeleteCourse(slug)
 
     history.push('/courses');
   }
@@ -261,21 +271,21 @@ class App extends Component {
             />
 
             {/* Display a specific course */}
-            <Route exact path="/courses/:courseId" render={props =>
+            <Route exact path="/courses/:courseSlug" render={props =>
               <CourseDisplay
                 handleDeleteCourse={this.handleDeleteCourseAndRedirect}
                 screenSize={this.state.screenSize}
                 history={props.history}
-                course={this.getCourse(props.match.params.courseId)}
+                course={this.getCourse(props.match.params.courseSlug)}
               />} />
 
             {/* edit an existing course */}
-            <Route exact path="/courses/:courseId/edit" render={props =>
+            <Route exact path="/courses/:courseSlug/edit" render={props =>
               <CourseNew
                 handleDeleteCourse={this.handleDeleteCourseAndRedirect}
                 screenSize={this.state.screenSize}
                 history={props.history}
-                currentCourse={this.getCourse(props.match.params.courseId)}
+                currentCourse={this.getCourse(props.match.params.courseSlug)}
                 handleSaveCourse={this.handleUpdateCourse}
               />} />
 

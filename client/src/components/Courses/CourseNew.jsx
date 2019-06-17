@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBan, faSave, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import uuidv4 from 'uuid/v4';
+import slugify from 'react-slugify';
 
 // components
 import { Logo, Navigation, Title } from '../../shared/Layout';
@@ -27,11 +28,13 @@ class CourseEdit extends Component {
     this.state = {
       isEditing: false,
       name: '',
+      slug: '',
       city: '',
       address: '',
       state: '',
       zip: '',
-      nameValid: true
+      nameValid: true,
+      nameUnique: true
     }
 
     this.handleValidation = this.handleValidation.bind(this);
@@ -43,12 +46,13 @@ class CourseEdit extends Component {
   // a second render initially on mounting. Research alternatives
   componentDidMount() {
     if (this.props.currentCourse) {
-      let { id, name, city, address, state, zip } = this.props.currentCourse;
+      let { id, slug, name, city, address, state, zip } = this.props.currentCourse;
 
       this.setState(() => ({
         isEditing: true,
         id,
         name,
+        slug,
         city: city || '',
         address: address || '',
         state: state || '',
@@ -66,13 +70,16 @@ class CourseEdit extends Component {
       let newCourse = {
         id: isEditing ? id : uuidv4(),
         name,
+        slug: slugify(name),
         address,
         city,
         state,
         zip,
       }
 
-      this.props.handleSaveCourse(newCourse, history);
+      if (!this.props.handleSaveCourse(newCourse, history)) {
+        this.setState({ nameUnique: false })
+      }
     } else {
       this.setState({ nameValid: false })
     }
@@ -87,7 +94,7 @@ class CourseEdit extends Component {
   }
 
   render() {
-    let { isEditing, id, name, address, city, state, zip, nameValid } = this.state;
+    let { isEditing, id, name, address, city, state, zip, nameValid, nameUnique } = this.state;
     let { handleDeleteCourse, history } = this.props;
     return (
       <div className={styles.CourseNew}>
@@ -99,11 +106,12 @@ class CourseEdit extends Component {
             <label >
               <span>Course Name <span className={styles.required}>
                 {nameValid ? "" : "*Required"}
+                {nameUnique ? "" : "*Duplicate name"}
               </span></span>
               <input
                 name="name"
                 type="text"
-                className={nameValid ? "" : styles.required}
+                className={(nameValid && nameUnique) ? "" : styles.required}
                 required
                 value={name}
                 onChange={e => this.handleInputChange(e.target.value, "name")}

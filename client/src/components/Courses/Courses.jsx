@@ -26,10 +26,11 @@ const Courses = ({ screenSize, courses, handleDeleteCourse }) =>
       <Title title="Courses" />
       <RowContainer className={styles.rowContainer}>
         {
-          courses.map(({ id, name, city, state }) =>
+          courses.map(({ id, slug, name, city, state }) =>
             <Row
               key={id}
               id={id}
+              slug={slug}
               name={name}
               city={city}
               state={state}
