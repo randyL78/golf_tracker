@@ -6,24 +6,22 @@ import { faPlayCircle, faEye } from '@fortawesome/free-solid-svg-icons';
 
 // components
 import Container, { FormContainer, ButtonContainer } from '../../shared/Containers/Container';
-import Logo from '../../shared/Logo/Logo';
-import Navigation from '../../shared/Navigation/Navigation';
-import { Title } from '../../shared/Layout';
+import { Title, Logo, Navigation } from '../../shared/Layout';
 import { LinkButton, Button } from '../../shared/Buttons/Button';
 
 // styles
-import styles from './StartRound.scss';
+import styles from './RoundStart.scss';
 
 
 /**
- * Rounds.js
- * Displays a users Rounds or starts a new round of golf
+ * RoundStart.js
+ * Starts a new round of golf
  * @param {*} props 
  */
-const Rounds = ({ screenSize, courses, handleStartRound, history }) => {
+const RoundStart = ({ screenSize, courses, handleStartRound, history }) => {
   let selectField;
   return (
-    <div className={styles.StartRound}>
+    <div className={styles.RoundStart}>
       <Logo inline={true} />
       <Navigation showMenu={screenSize !== 'large'} />
       <Container >
@@ -58,9 +56,9 @@ const Rounds = ({ screenSize, courses, handleStartRound, history }) => {
 };
 
 
-Rounds.propTypes = {
+RoundStart.propTypes = {
   screenSize: PropTypes.oneOf(['small', 'medium', 'large']),
   courses: PropTypes.array.isRequired
 }
 
-export default Rounds;
+export default RoundStart;

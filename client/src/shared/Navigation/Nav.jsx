@@ -17,7 +17,7 @@ const Nav = props =>
     <NavLink activeClassName={styles.active} className={styles.NavLink} to="/home">Home</NavLink>
     <NavLink activeClassName={styles.active} className={styles.NavLink} to="/courses">Courses</NavLink>
     <NavLink activeClassName={styles.active} className={styles.NavLink} to="/statistics">Statistics</NavLink>
-    <NavLink activeClassName={styles.active} className={styles.NavLink} to="/rounds/start">Start Round</NavLink>
+    <NavLink activeClassName={styles.active} className={styles.NavLink} to="/rounds/start">Rounds</NavLink>
   </nav>
 
 export default Nav;

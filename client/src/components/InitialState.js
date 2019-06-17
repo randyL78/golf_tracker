@@ -3,12 +3,16 @@ export default {
   // screen size state to adjust layout by
   screenSize: 'small',
 
+  // state for managing course routes
+
+  // state for managing round routes
+  currentRound: {},
+  isInARound: false,
+
+
   // eventually, data from the server
   // for now static data
   data: {
-    currentRound: {},
-    rounds: [].push,
-    currentCourse: 0,
     courses: [
       {
         id: "1",
@@ -38,6 +42,7 @@ export default {
         city: 'Lynchburg',
         state: 'VA'
       }
-    ]
+    ],
+    rounds: [],
   }
 }

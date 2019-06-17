@@ -47,5 +47,5 @@ Button.defaultProps = {
 Button.propTypes = {
   text: PropTypes.string.isRequired,
   handleOnClick: PropTypes.func.isRequired,
-  style: PropTypes.string
+  style: PropTypes.oneOf(['Warning', 'Default', 'Info'])
 }
