@@ -38,8 +38,9 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack --mode development",
-    "start": "webpack-dev-server --mode development --open --port 3000"
+    "build": "webpack",
+    "start": "webpack-dev-server --mode development --open --port 3000",
+    "start-dist": "http-server dist/"
   },
   "author": "Randy Layne",
   "license": "MIT",

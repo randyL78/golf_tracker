@@ -3,12 +3,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimesCircle, faSave } from '@fortawesome/free-solid-svg-icons';
+import { faTimesCircle, faSave, faEye } from '@fortawesome/free-solid-svg-icons';
 
 // components
 import Container, { ButtonContainer } from '../../shared/Containers/Container';
 import { Title, Navigation, Logo } from '../../shared/Layout';
-import { Button } from '../../shared/Buttons/Button';
+import { Button, LinkButton } from '../../shared/Buttons/Button';
 
 // styling
 import styles from './RoundOverview.scss';
@@ -36,9 +36,12 @@ const RoundOverview = ({ screenSize, holes, history, handleSaveRound, handleQuit
         </div>
 
         <ButtonContainer>
-          <Button text="Quit" style="Info" handleOnClick={() => handleQuitRound(history)} >
+          <Button text="Quit" style="Warning" handleOnClick={() => handleQuitRound(history)} >
             <FontAwesomeIcon icon={faTimesCircle} />
           </Button>
+          <LinkButton text="Score" style="Info" to="/rounds/start/scorecard">
+            <FontAwesomeIcon icon={faEye} />
+          </LinkButton>
           <Button text="Save" handleOnClick={() => handleSaveRound(history)}>
             <FontAwesomeIcon icon={faSave} />
           </Button>

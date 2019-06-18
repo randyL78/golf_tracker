@@ -33,7 +33,7 @@ const RoundStart = ({ screenSize, courses, handleStartRound, history }) => {
               <option value="" disabled>Please select one</option>
               {
                 courses.map(course =>
-                  <option key={course.id} value={course.id}>
+                  <option key={course.id} value={course.slug}>
                     {course.name}
                   </option>
                 )

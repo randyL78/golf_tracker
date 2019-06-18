@@ -1,10 +1,12 @@
 // dependencies
 import React, { Component } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowAltCircleRight, faEye, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 
 // components
 import Container, { FormContainer, ButtonContainer } from '../../shared/Containers/Container';
 import { Title, Navigation, Logo } from '../../shared/Layout';
-import { Button } from '../../shared/Buttons/Button';
+import { Button, LinkButton } from '../../shared/Buttons/Button';
 
 
 // styles
@@ -64,13 +66,25 @@ class ScoreHole extends Component {
 
   // handle the on change event for the number fields
   handleNumberChange = (value, stateKey) => {
-    console.log(this.state.currentHole)
     this.setState(prevState => ({
       currentHole: {
         ...prevState.currentHole,
         [stateKey]: value
       }
     }));
+  }
+
+  // reset the current hole state back to zeros
+  handleReset = () => {
+    this.setState({
+      currentHole: {
+        number: 0,
+        par: 0,
+        strokes: 0,
+        putts: 0,
+        fairway: 'On Target'
+      }
+    })
   }
 
   // set the maximum value for putts
@@ -81,9 +95,28 @@ class ScoreHole extends Component {
 
   // handle saving current hole and redirecting to the next
   nextHole = () => {
-    const { number, history, handleNextHole } = this.props;
+    const { history, handleSaveHole } = this.props;
     const { currentHole } = this.state;
-    handleNextHole(number, history, currentHole)
+    const { number } = currentHole;
+
+    handleSaveHole(currentHole)
+
+    // if its the final hole redirect to the round overview route
+    // otherewise redirect to the next hole
+    number === 18 ?
+      history.push('/rounds/start/overview') :
+      history.push(`/rounds/start/hole-${number + 1}`)
+  }
+
+  // handle saving current hole and redirecting to the scorecard
+  viewScore = () => {
+    const { history, handleSaveHole } = this.props;
+    const { currentHole } = this.state;
+
+    handleSaveHole(currentHole)
+
+    history.push('/rounds/start/scorecard');
+
   }
 
 
@@ -158,10 +191,15 @@ class ScoreHole extends Component {
             </table>
           </FormContainer>
           <ButtonContainer>
-            <Button
-              text="Next"
-              handleOnClick={this.nextHole}
-            />
+            <Button text="Reset" style="Warning" handleOnClick={this.handleReset}>
+              <FontAwesomeIcon icon={faTimesCircle} />
+            </Button>
+            <Button text="Score" style="Info" handleOnClick={this.viewScore} >
+              <FontAwesomeIcon icon={faEye} />
+            </Button>
+            <Button text="Next" handleOnClick={this.nextHole} >
+              <FontAwesomeIcon icon={faArrowAltCircleRight} />
+            </Button>
           </ButtonContainer>
         </Container>
       </div>

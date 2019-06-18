@@ -7,6 +7,8 @@ export default {
 
   // state for managing round routes
   currentRound: {},
+
+  // set to true to test styling
   isInARound: false,
 
 

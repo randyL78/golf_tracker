@@ -18,7 +18,7 @@ import ErrorPage from './Error/ErrorPage';
 import Home from './Home/Home';
 import Courses from './Courses/Courses';
 import CourseNew from './Courses/CourseNew';
-import { RoundStart, RoundOverview, ScoreHole } from './Rounds/Rounds';
+import { RoundStart, RoundOverview, RoundScorecard, ScoreHole } from './Rounds/Rounds';
 import Statistics from './Statistics/Statistics';
 import CourseDisplay from './Courses/CourseDisplay.jsx';
 
@@ -164,7 +164,7 @@ class App extends Component {
    * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
 
   // handle starting a new round
-  handleStartRound(courseId, history) {
+  handleStartRound(course, history) {
 
     let holes = [];
 
@@ -181,7 +181,7 @@ class App extends Component {
     this.setState({
       isInARound: true,
       currentRound: {
-        courseId,
+        course,
         holes
       }
     });
@@ -211,17 +211,19 @@ class App extends Component {
 
   // reset round progress and redirect to start new round
   handleQuitRound = history => {
-    this.setState(prevState => ({
+    this.setState({
       isInARound: false,
       currentRound: null,
-    }))
+    })
 
     history.push('/rounds/start');
   }
 
   // handle saving and going to next hole
-  handleNextHole = (holeNumber, history, currentHole) => {
-    holeNumber = Number(holeNumber);
+  handleSaveHole = (currentHole) => {
+
+    // ensure the hole number is a number not a string
+    const holeNumber = Number(currentHole.number);
 
     const holes = [
       ...this.state.currentRound.holes,
@@ -236,7 +238,10 @@ class App extends Component {
       }
     }));
 
-    holeNumber === 18 ? history.push('/rounds/start/overview') : history.push(`/rounds/start/hole-${holeNumber + 1}`)
+    return true;
+    // TODO: UNSAFE, in future iteration, sanitize route variable to 
+    // Avoid possible code injection
+    // holeNumber === 18 ? history.push('/rounds/start / overview') : history.push(`/rounds/start/hole-${holeNumber + 1}`)
   }
 
 
@@ -253,7 +258,9 @@ class App extends Component {
           <Switch>
             <Route exact path="/home" render={() => <Home screenSize={this.state.screenSize} />} />
 
-            {/* course routes */}
+            {/* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=            
+                  Course Routes 
+            */}
             {/* Display all courses */}
             <Route exact path="/courses" render={() =>
               <Courses
@@ -289,11 +296,15 @@ class App extends Component {
                 handleSaveCourse={this.handleUpdateCourse}
               />} />
 
+            {/* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=            
+                  Statistics Routes 
+            */}
             {/* statistics routes */}
             <Route exact path="/statistics" render={() => <Statistics screenSize={this.state.screenSize} />} />
 
-            {/* round routes */}
-
+            {/* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=            
+                  Round Routes 
+            */}
             {/* start a new round */}
             {/* if currently in a round, will redirect to round overview */}
             <Route exact path="/rounds/start" render={props =>
@@ -335,7 +346,7 @@ class App extends Component {
                   screenSize={this.state.screenSize}
                   number={props.match.params.number}
                   currentHole={this.state.currentRound.holes[props.match.params.number - 1]}
-                  handleNextHole={this.handleNextHole}
+                  handleSaveHole={this.handleSaveHole}
                   history={props.history}
                 />
                 :
@@ -343,6 +354,25 @@ class App extends Component {
             }
             />
 
+            {/* display scorecard for current round */}
+            {/* if not in a round, will redirect to round start */}
+            <Route exact path="/rounds/start/scorecard"
+              render={props =>
+                this.state.isInARound ?
+                  <RoundScorecard
+                    screenSize={this.state.screenSize}
+                    round={this.state.currentRound}
+
+                  />
+                  :
+                  <Redirect to="/rounds/start" />
+              }
+            />
+
+
+            {/* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=            
+                  Error Routes 
+            */}
             {/* Manually directed "Not found" error route */}
             <Route path="/404" render={() =>
               <ErrorPage

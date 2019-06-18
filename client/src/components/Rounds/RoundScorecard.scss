@@ -1,0 +1,65 @@
+@import "../../globalSyles/variables";
+
+
+$margin-mobile: 285px;
+$margin-desktop: 315px;
+
+.RoundScorecard {
+  .ScorecardContainer {
+    background-color: darken($text-white, 2%);
+    height: calc(100vh - #{$margin-mobile} );
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 25px;
+    box-shadow: -2px -2px 3px 0 inset $text-dark,
+                2px 2px 3px 0 inset $text-white;
+    border-radius: 10px 10px 2px 2px;
+    overflow-y: scroll;
+    overflow-x: auto;
+
+    @media screen and (min-width: $screen-l) {
+      height: calc(100vh - #{$margin-desktop} );
+    }
+  }
+
+  .Scorecard {
+    margin: auto;
+    background: #FFF;
+    border: 1px solid $text-dark;
+    text-align: center;
+
+    h3 {
+      display: inline-block;
+      width: 45%;
+    }
+
+    .par {
+      text-align: left;
+    }
+
+    .score {
+      text-align: right;
+    }
+
+    th {
+      background: $text-dark;
+      color: $text-white;
+
+      font-family: $font-stack-primary;
+      font-size: 18px;
+    }
+
+    td {
+      font-family: $font-stack-links;
+      font-size: 18px;
+    }
+
+    a {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      width: 25px;
+    }
+  }
+}
