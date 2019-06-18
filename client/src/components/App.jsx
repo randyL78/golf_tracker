@@ -3,8 +3,6 @@ import React, { Component } from 'react';
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 
 
-
-
 // TODO: Link to server/database via proxy
 // TODO: Add Redux Store to manage state
 // static data, later to be replaced with call to backend database

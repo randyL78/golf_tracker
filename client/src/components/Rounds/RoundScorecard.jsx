@@ -36,6 +36,7 @@ const RoundScorecard = ({ screenSize, round }) => {
         <Title title="Scorecard" />
         <div className={styles.ScorecardContainer} >
           <div className={styles.Scorecard} >
+            <h2>{round.course}</h2>
             <h3 className={styles.par}>Par: {par}</h3>
             <h3 className={styles.score}>Score: {score}</h3>
             <ScoreTable holes={frontNine} />
