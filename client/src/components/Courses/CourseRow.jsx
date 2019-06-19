@@ -13,18 +13,19 @@ import styles from './CourseRow.scss';
  * Displays the basic information of a single course
  * @param { id, name, city, state, handleDeleteCourse } props
  */
-const Row = ({ id, name, city, state, handleDeleteCourse }) =>
+const Row = ({ id, slug, name, city, state, handleDeleteCourse }) =>
   <p className={styles.Row}>
-    <Link to={`/courses/${id}`} className={styles.name}>{name}</Link>
-    <Link to={`/courses/${id}`} className={styles.city}>{city}</Link>
-    <Link to={`/courses/${id}`} className={styles.state}>{state}</Link>
-    <button className={styles.delete} onClick={() => handleDeleteCourse(id)} >
+    <Link to={`/courses/${slug}`} className={styles.name}>{name}</Link>
+    <Link to={`/courses/${slug}`} className={styles.city}>{city}</Link>
+    <Link to={`/courses/${slug}`} className={styles.state}>{state}</Link>
+    <button className={styles.delete} onClick={() => handleDeleteCourse(slug)} >
       <FontAwesomeIcon icon={faTrashAlt} />
     </button>
   </p>
 
 Row.propTypes = {
   name: PropTypes.string.isRequired,
+  slug: PropTypes.string.isRequired,
   city: PropTypes.string,
   state: PropTypes.string,
   handleDeleteCourse: PropTypes.func.isRequired

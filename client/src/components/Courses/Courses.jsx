@@ -1,6 +1,5 @@
 // dependencies
 import React from 'react';
-import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlusSquare } from '@fortawesome/free-solid-svg-icons';
@@ -27,10 +26,11 @@ const Courses = ({ screenSize, courses, handleDeleteCourse }) =>
       <Title title="Courses" />
       <RowContainer className={styles.rowContainer}>
         {
-          courses.map(({ id, name, city, state }) =>
+          courses.map(({ id, slug, name, city, state }) =>
             <Row
               key={id}
               id={id}
+              slug={slug}
               name={name}
               city={city}
               state={state}

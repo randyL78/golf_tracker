@@ -3,7 +3,9 @@ import React, { Component } from 'react';
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 
 
-// static data
+// TODO: Link to server/database via proxy
+// TODO: Add Redux Store to manage state
+// static data, later to be replaced with call to backend database
 import initialState from './InitialState.js';
 
 // styles
@@ -13,8 +15,8 @@ import styles from './App.scss';
 import ErrorPage from './Error/ErrorPage';
 import Home from './Home/Home';
 import Courses from './Courses/Courses';
-import CourseEdit from './Courses/CourseNew';
-import Rounds from './Rounds/Rounds';
+import CourseNew from './Courses/CourseNew';
+import { RoundStart, RoundOverview, RoundScorecard, ScoreHole } from './Rounds/Rounds';
 import Statistics from './Statistics/Statistics';
 import CourseDisplay from './Courses/CourseDisplay.jsx';
 
@@ -32,9 +34,13 @@ class App extends Component {
     this.state = initialState;
 
     // bind `this` to event listeners
+    // TODO: Convert to arrow class properties now that the Babel plugin:
+    // `@babel/plugin-proposal-class-properties` is installed
     this.updateScreenSize = this.updateScreenSize.bind(this);
     this.handleDeleteCourse = this.handleDeleteCourse.bind(this);
     this.handleSaveCourse = this.handleSaveCourse.bind(this);
+    this.handleStartRound = this.handleStartRound.bind(this);
+    this.handleUpdateCourse = this.handleUpdateCourse.bind(this);
     this.handleDeleteCourseAndRedirect = this.handleDeleteCourseAndRedirect.bind(this);
   }
 
@@ -74,6 +80,8 @@ class App extends Component {
   getScreenSize() {
     let screenSize;
 
+    // IMPORTANT: These dimensions map to specific values in the 
+    // Sass variables partial `../globalSyles/_variables.scss`
     if (window.innerWidth >= 1400) {
       screenSize = 'large'
     } else if (window.innerWidth >= 980) {
@@ -90,13 +98,13 @@ class App extends Component {
    * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
 
   // get the details of a specific course
-  getCourse(id) {
-    return this.state.data.courses.find(course => course.id === id);
+  getCourse(slug) {
+    return this.state.data.courses.find(course => course.slug === slug);
   }
 
   // delete the course at the current row
-  handleDeleteCourse(id) {
-    let updatedCourses = this.state.data.courses.filter(course => course.id !== id);
+  handleDeleteCourse(slug) {
+    let updatedCourses = this.state.data.courses.filter(course => course.slug !== slug);
 
     let data = { ...this.state.data, courses: updatedCourses };
 
@@ -105,6 +113,10 @@ class App extends Component {
 
   // handle saving a new course
   handleSaveCourse(newCourse, history) {
+
+    if (this.getCourse(newCourse.slug)) {
+      return false;
+    }
 
     this.setState(prevState => ({
       data: {
@@ -119,14 +131,123 @@ class App extends Component {
     history.push('/courses');
   }
 
-  handleDeleteCourseAndRedirect(id, history) {
-    this.handleDeleteCourse(id)
+  // handle updating a course
+  handleUpdateCourse(updatedCourse, history) {
+    const existingCourse = this.getCourse(updatedCourse.slug);
+    if (existingCourse && existingCourse.id !== updatedCourse.id) {
+      return false;
+    }
+
+    let updatedCourses = this.state.data.courses.map(course =>
+      (course.id === updatedCourse.id) ? updatedCourse : course)
+
+    this.setState(prevState => ({
+      data: {
+        ...prevState.data,
+        courses: updatedCourses
+      }
+    }))
 
     history.push('/courses');
   }
 
+  handleDeleteCourseAndRedirect(slug, history) {
+    this.handleDeleteCourse(slug)
+
+    history.push('/courses');
+  }
+
+  /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+   *          Round Related Methods
+   * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
+
+  // handle starting a new round
+  handleStartRound(course, history) {
+
+    let holes = [];
+
+    for (let i = 1; i <= 18; i++) {
+      holes.push({
+        number: i,
+        par: null,
+        strokes: null,
+        putts: null,
+        fairway: null
+      });
+    }
+
+    this.setState({
+      isInARound: true,
+      currentRound: {
+        date: Date.now(),
+        course,
+        holes
+      }
+    });
+
+    history.push('/rounds/start/overview');
+  }
+
+  // save round progress
+  handleSaveRound = history => {
+
+    // TODO: Save the round to the database, for now
+    // just push to state.
+    const rounds = [...this.state.data.rounds, this.state.currentRound];
+
+    // reset the current round and take out `in a round` state
+    this.setState(prevState => ({
+      isInARound: false,
+      currentRound: null,
+      data: {
+        ...prevState.data,
+        rounds
+      }
+    }))
+
+    history.push('/home');
+  }
+
+  // reset round progress and redirect to start new round
+  handleQuitRound = history => {
+    this.setState({
+      isInARound: false,
+      currentRound: null,
+    })
+
+    history.push('/rounds/start');
+  }
+
+  // handle saving and going to next hole
+  handleSaveHole = (currentHole) => {
+
+    // ensure the hole number is a number not a string
+    const holeNumber = Number(currentHole.number);
+
+    const holes = [
+      ...this.state.currentRound.holes,
+    ]
+
+    holes[holeNumber - 1] = currentHole;
+
+    this.setState(prevState => ({
+      currentRound: {
+        ...prevState.currentRound,
+        holes
+      }
+    }));
+
+    return true;
+    // TODO: UNSAFE, in future iteration, sanitize route variable to 
+    // Avoid possible code injection
+    // holeNumber === 18 ? history.push('/rounds/start / overview') : history.push(`/rounds/start/hole-${holeNumber + 1}`)
+  }
 
 
+
+  /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+   *         Render the App
+   * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
   render() {
     return (
       <BrowserRouter>
@@ -136,7 +257,9 @@ class App extends Component {
           <Switch>
             <Route exact path="/home" render={() => <Home screenSize={this.state.screenSize} />} />
 
-            {/* course routes */}
+            {/* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=            
+                  Course Routes 
+            */}
             {/* Display all courses */}
             <Route exact path="/courses" render={() =>
               <Courses
@@ -147,29 +270,123 @@ class App extends Component {
 
             {/* Create a new course */}
             <Route exact path="/courses/new" render={props =>
-              <CourseEdit
+              <CourseNew
                 history={props.history}
                 screenSize={this.state.screenSize}
                 handleSaveCourse={this.handleSaveCourse} />}
             />
 
             {/* Display a specific course */}
-            <Route exact path="/courses/:courseId" render={props =>
+            <Route exact path="/courses/:courseSlug" render={props =>
               <CourseDisplay
                 handleDeleteCourse={this.handleDeleteCourseAndRedirect}
                 screenSize={this.state.screenSize}
                 history={props.history}
-                course={this.getCourse(props.match.params.courseId)}
+                course={this.getCourse(props.match.params.courseSlug)}
               />} />
 
+            {/* edit an existing course */}
+            <Route exact path="/courses/:courseSlug/edit" render={props =>
+              <CourseNew
+                handleDeleteCourse={this.handleDeleteCourseAndRedirect}
+                screenSize={this.state.screenSize}
+                history={props.history}
+                currentCourse={this.getCourse(props.match.params.courseSlug)}
+                handleSaveCourse={this.handleUpdateCourse}
+              />} />
+
+            {/* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=            
+                  Statistics Routes 
+            */}
             {/* statistics routes */}
             <Route exact path="/statistics" render={() => <Statistics screenSize={this.state.screenSize} />} />
 
-            {/* round routes */}
-            <Route exact path="/rounds" render={() => <Rounds screenSize={this.state.screenSize} />} />
+            {/* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=            
+                  Round Routes 
+            */}
+            {/* start a new round */}
+            {/* if currently in a round, will redirect to round overview */}
+            <Route exact path="/rounds/start" render={props =>
+              !this.state.isInARound ?
+                <RoundStart
+                  screenSize={this.state.screenSize}
+                  courses={this.state.data.courses}
+                  history={props.history}
+                  handleStartRound={this.handleStartRound}
+                />
+                :
+                <Redirect to="/rounds/start/overview" />
+            }
+            />
 
-            {/* If all else fails, render the error page */}
-            <Route render={() => <ErrorPage screenSize={this.state.screenSize} />} />
+            {/* display links to holes in a round */}
+            {/* if not in a round, will redirect to round start */}
+            <Route exact path="/rounds/start/overview" render={props =>
+              this.state.isInARound ?
+                <RoundOverview
+                  screenSize={this.state.screenSize}
+                  holes={this.state.currentRound.holes}
+                  history={props.history}
+                  handleSaveRound={this.handleSaveRound}
+                  handleQuitRound={this.handleQuitRound}
+                />
+                :
+                <Redirect to="/rounds/start" />
+            }
+
+
+            />
+
+            {/* form to enter score for a hole */}
+            {/* if not in a round, will redirect to round start */}
+            <Route exact path="/rounds/start/hole-:number" render={props =>
+              this.state.isInARound ?
+                <ScoreHole
+                  screenSize={this.state.screenSize}
+                  number={props.match.params.number}
+                  currentHole={this.state.currentRound.holes[props.match.params.number - 1]}
+                  handleSaveHole={this.handleSaveHole}
+                  history={props.history}
+                />
+                :
+                <Redirect to="/rounds/start" />
+            }
+            />
+
+            {/* display scorecard for current round */}
+            {/* if not in a round, will redirect to round start */}
+            <Route exact path="/rounds/start/scorecard"
+              render={props =>
+                this.state.isInARound ?
+                  <RoundScorecard
+                    screenSize={this.state.screenSize}
+                    round={this.state.currentRound}
+
+                  />
+                  :
+                  <Redirect to="/rounds/start" />
+              }
+            />
+
+
+            {/* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=            
+                  Error Routes 
+            */}
+            {/* Manually directed "Not found" error route */}
+            <Route path="/404" render={() =>
+              <ErrorPage
+                screenSize={this.state.screenSize}
+              />}
+            />
+
+
+            {/* If all else fails, render the error component */}
+            <Route render={() =>
+              <ErrorPage
+                screenSize={this.state.screenSize}
+              />}
+
+            />
           </Switch>
 
         </div>

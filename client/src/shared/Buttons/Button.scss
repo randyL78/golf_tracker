@@ -13,7 +13,7 @@
   border-radius: 5px;
   flex-basis: 100px;
   margin: 0 15px 0;
-  @media screen and (min-width: $screen-xs){
+  @media screen and (min-width: $screen-s){
     flex-basis: 150px;
   }
 }
@@ -36,7 +36,7 @@
   &Text {
     display: none;
 
-    @media screen and (min-width: $screen-xs){
+    @media screen and (min-width: $screen-s){
       display: inline;
       margin: 0 5px;
     }

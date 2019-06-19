@@ -1,5 +1,5 @@
 // dependencies
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBan, faSave, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
@@ -21,7 +21,7 @@ const CourseDisplay = ({ course, screenSize, handleDeleteCourse, history }) =>
     <Logo inline={true} />
     <Navigation showMenu={screenSize !== 'large'} />
     <Container >
-      <Title title="Course:" />
+      <Title title="Course" />
       <FormContainer>
         <label >
           <span>Course Name </span>
@@ -69,7 +69,7 @@ const CourseDisplay = ({ course, screenSize, handleDeleteCourse, history }) =>
         <Button
           text="Delete"
           style="Warning"
-          handleOnClick={() => handleDeleteCourse(course.id, history)}
+          handleOnClick={() => handleDeleteCourse(course.slug, history)}
         >
           <FontAwesomeIcon icon={faTrashAlt} />
         </Button>
@@ -78,7 +78,7 @@ const CourseDisplay = ({ course, screenSize, handleDeleteCourse, history }) =>
         </LinkButton>
         <LinkButton
           text="Edit"
-          to={`/courses/${course.id}/edit`}
+          to={`/courses/${course.slug}/edit`}
         >
           <FontAwesomeIcon icon={faSave} />
         </LinkButton>

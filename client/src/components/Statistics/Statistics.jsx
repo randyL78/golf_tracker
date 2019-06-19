@@ -23,8 +23,8 @@ const Statistics = props =>
     <Container >
       {
         <div className={styles.Statistics}>
-          <h1>Welcome to the different Statistics</h1>
-          <p>Here you will be able to add new Statistics and view ones that are already in</p>
+          <h1>Statistics: Coming Soon!</h1>
+          <p>Here you will be able to view different statistics based on score you have entered</p>
         </div>
       }
     </Container>
