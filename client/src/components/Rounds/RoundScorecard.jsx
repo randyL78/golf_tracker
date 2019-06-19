@@ -19,14 +19,19 @@ import styles from './RoundScorecard.scss';
  */
 const RoundScorecard = ({ screenSize, round }) => {
 
-  const frontNine = round.holes.filter(hole => hole.number <= 9);
-  const backNine = round.holes.filter(hole => hole.number > 9);
+  // create an enum for the months
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  // create a 3 x 6 array of holes
+  const holes = Array.from({ length: 6 }, (value, index) => round.holes.slice(index * 3, index * 3 + 3))
+
   const score = round
     .holes.map(hole => Number(hole.strokes))
     .reduce((total, num) => total + num);
   const par = round
     .holes.map(hole => Number(hole.par))
     .reduce((total, num) => total + num);
+  const date = new Date(round.date);
 
   return (
     <div className={styles.RoundScorecard}>
@@ -37,11 +42,16 @@ const RoundScorecard = ({ screenSize, round }) => {
         <div className={styles.ScorecardContainer} >
           <div className={styles.Scorecard} >
             <h2>{round.course}</h2>
+            <h2>{`${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`}</h2>
             <h3 className={styles.par}>Par: {par}</h3>
             <h3 className={styles.score}>Score: {score}</h3>
-            <ScoreTable holes={frontNine} />
 
-            <ScoreTable holes={backNine} />
+            {
+              holes.map((threeHoles, index) =>
+                <ScoreTable key={index} holes={threeHoles} />
+              )
+            }
+
           </div>
         </div>
         <ButtonContainer>
@@ -62,6 +72,19 @@ export default RoundScorecard;
  */
 const ScoreTable = ({ holes }) => {
 
+  const determineClass = (par, score) => {
+    if (!par || !score || par === score)
+      return styles.par;
+    else if (par - score > 1)
+      return styles.eagle;
+    else if (par - score === 1)
+      return styles.birdie;
+    else if (par - score === -1)
+      return styles.bogie;
+    else
+      return styles.double;
+  }
+
   return (
     <table>
       <thead>
@@ -70,7 +93,10 @@ const ScoreTable = ({ holes }) => {
             holes.map(hole =>
               <th key={hole.number}>
                 <Link to={`/rounds/start/hole-${hole.number}`} >
+
                   {hole.number}
+
+
                 </Link>
               </th>
             )
@@ -80,10 +106,12 @@ const ScoreTable = ({ holes }) => {
       <tbody>
         <tr>
           {
-            holes.map(hole =>
-              <td key={hole.number}>
-                <Link to={`/rounds/start/hole-${hole.number}`} >
-                  {hole.strokes}
+            holes.map(({ number, strokes, par }) =>
+              <td key={number}>
+                <Link to={`/rounds/start/hole-${number}`} >
+                  <div className={determineClass(par, strokes)}>
+                    {strokes}
+                  </div>
                 </Link>
               </td>
             )

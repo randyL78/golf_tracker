@@ -28,10 +28,12 @@ $margin-desktop: 315px;
     background: #FFF;
     border: 1px solid $text-dark;
     text-align: center;
-
+    padding: 5px;
+    max-width: 850px;
+   
     h3 {
       display: inline-block;
-      width: 45%;
+      width: 47%;
     }
 
     .par {
@@ -42,6 +44,14 @@ $margin-desktop: 315px;
       text-align: right;
     }
 
+    table {
+      max-width: 100%;
+      @media screen and (min-width: $screen-s) {
+        display: inline-block;
+        
+      }
+    }
+
     th {
       background: $text-dark;
       color: $text-white;
@@ -50,7 +60,7 @@ $margin-desktop: 315px;
       font-size: 18px;
     }
 
-    td {
+    td {  
       font-family: $font-stack-links;
       font-size: 18px;
     }
@@ -59,7 +69,49 @@ $margin-desktop: 315px;
       display: block;
       text-decoration: none;
       color: inherit;
-      width: 25px;
+      width: 50px;
+      line-height: 30px;
+      min-height: 30px;
+      @media screen and (min-width: $screen-s) {
+        width: 75px;
+        line-height: 45px;
+        min-height: 45px;
+      }
+
+      .par {
+        line-height: 30px;
+        min-height: 30px;
+        @media screen and (min-width: $screen-s) {
+          line-height: 45px;
+          min-height: 45px;
+        }
+      }
+
+      .eagle {
+        border-radius: 50%;
+        background: $text-green;
+        color: $text-white;
+        border: 2px solid $text-green;
+      }
+
+      .birdie {
+        border-radius: 50%;
+        border: 2px solid $text-green;
+      }
+
+      .par {
+        border: 2px solid #FFF;
+      }
+
+      .bogie {
+        border: 2px solid $text-dark;
+      }
+
+      .double {
+        background: $text-dark;
+        border: 2px solid $text-dark;
+        color: $text-white;
+      }
     }
   }
 }

@@ -179,6 +179,7 @@ class App extends Component {
     this.setState({
       isInARound: true,
       currentRound: {
+        date: Date.now(),
         course,
         holes
       }
