@@ -74,7 +74,7 @@ const ScoreTable = ({ holes }) => {
 
   const determineClass = (par, score) => {
     if (!par || !score || par === score)
-      return styles.par;
+      return styles.even;
     else if (par - score > 1)
       return styles.eagle;
     else if (par - score === 1)

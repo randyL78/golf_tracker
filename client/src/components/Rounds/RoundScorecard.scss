@@ -78,12 +78,12 @@ $margin-desktop: 315px;
         min-height: 45px;
       }
 
-      .par {
-        line-height: 30px;
-        min-height: 30px;
+      .par, .eagle, .birdie, .bogie, .double {
+        line-height: 40px;
+        min-height: 40px;
         @media screen and (min-width: $screen-s) {
-          line-height: 45px;
-          min-height: 45px;
+          line-height: 55px;
+          min-height: 55px;
         }
       }
 
