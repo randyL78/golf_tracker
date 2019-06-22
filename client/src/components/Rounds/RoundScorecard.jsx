@@ -3,12 +3,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSave, faEye } from '@fortawesome/free-solid-svg-icons';
+import { faEye, faArrowAltCircleRight } from '@fortawesome/free-solid-svg-icons';
 
 // components
 import Container, { ButtonContainer } from '../../shared/Containers/Container';
 import { Title, Navigation, Logo } from '../../shared/Layout';
-import { Button, LinkButton } from '../../shared/Buttons/Button';
+import { LinkButton } from '../../shared/Buttons/Button';
 
 // styling
 import styles from './RoundScorecard.scss';
@@ -17,7 +17,13 @@ import styles from './RoundScorecard.scss';
  * RoundScorecard.jsx
  * Displays the Scorecard of the selected round
  */
-const RoundScorecard = ({ screenSize, round }) => {
+const RoundScorecard = ({ screenSize, round, history, isCurrent }) => {
+  if (!round) {
+    history.push('/404');
+    return false;
+  }
+
+  let route = isCurrent ? `/rounds/start/hole-` : `/rounds/${round.id}/hole-`;
 
   // create an enum for the months
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -48,16 +54,27 @@ const RoundScorecard = ({ screenSize, round }) => {
 
             {
               holes.map((threeHoles, index) =>
-                <ScoreTable key={index} holes={threeHoles} />
+                <ScoreTable key={index} holes={threeHoles} route={route} />
               )
             }
 
           </div>
         </div>
         <ButtonContainer>
-          <LinkButton text="View All" to="/rounds" >
+          <LinkButton style="Info" text="View All" to="/rounds" >
             <FontAwesomeIcon icon={faEye} />
           </LinkButton>
+          {
+            isCurrent
+              ?
+              <LinkButton
+                text="Overview"
+                to="/rounds/start/overview" >
+                <FontAwesomeIcon icon={faArrowAltCircleRight} />
+              </LinkButton>
+              : null
+
+          }
         </ButtonContainer>
       </Container>
 
@@ -70,9 +87,14 @@ export default RoundScorecard;
 /**
  * ScoreTable
  */
-const ScoreTable = ({ holes }) => {
+const ScoreTable = ({ holes, route }) => {
 
   const determineClass = (par, score) => {
+
+    // ensure the values passed are numbers
+    par = Number(par);
+    score = Number(score);
+
     if (!par || !score || par === score)
       return styles.even;
     else if (par - score > 1)
@@ -92,11 +114,8 @@ const ScoreTable = ({ holes }) => {
           {
             holes.map(hole =>
               <th key={hole.number}>
-                <Link to={`/rounds/start/hole-${hole.number}`} >
-
+                <Link to={`${route}${hole.number}`} >
                   {hole.number}
-
-
                 </Link>
               </th>
             )
@@ -108,7 +127,7 @@ const ScoreTable = ({ holes }) => {
           {
             holes.map(({ number, strokes, par }) =>
               <td key={number}>
-                <Link to={`/rounds/start/hole-${number}`} >
+                <Link to={`${route}${number}`} >
                   <div className={determineClass(par, strokes)}>
                     {strokes}
                   </div>

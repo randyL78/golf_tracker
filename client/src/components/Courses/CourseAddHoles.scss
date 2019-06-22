@@ -1,0 +1,73 @@
+@import "../../globalSyles/variables";
+
+
+$margin-mobile: 285px;
+$margin-desktop: 315px;
+
+.CourseAddHoles {
+
+  text-align: center;
+  width: 270px;
+  margin: auto;
+  max-height: calc(100vh - #{$margin-mobile} );
+  overflow-y: scroll;
+  overflow-x: auto;
+  padding-top: 10px;
+ 
+  // allow room for increase in button size
+  @media (min-width: $screen-s) {
+    width: 350px
+  }
+
+   // allows change from 3x6 layout to 6x3
+  @media (min-width: $screen-m) {
+    width: 650px
+  }
+   // allow room for increase in button size
+  @media (min-width: $screen-l) {
+    height: calc(100vh - #{$margin-desktop} );
+    width: 700px;
+  }
+}
+
+.Hole {
+  display: inline-block;
+  width: 60px;
+  line-height: 25px;
+  font-family: $font-stack-links;
+  text-decoration: none;
+  border: 2px solid $text-white;
+  text-align: center;
+  margin: 5px 10px;
+  background: $text-dark;
+  box-shadow: 0 0 2px 2px $text-dark;
+  color: $text-white;
+
+  @media (min-width: $screen-s) {
+    margin: 5px 15px;
+  }
+  
+  @media (min-width: $screen-m) {
+    width: 70px;
+  }
+
+  @media (min-width: $screen-l) {
+    width: 75px;
+  }
+
+  span {
+    display: block;
+  }
+
+  input {
+    width: 50px;
+    text-align: center;
+    @media (min-width: $screen-m) {
+      width: 60px;
+    }
+
+    @media (min-width: $screen-l) {
+      width: 65px;
+    }
+  }
+}

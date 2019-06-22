@@ -1,4 +1,5 @@
-@import '../../globalSyles/variables';
+@import "../../globalSyles/variables";
+
 
 %span {
   display: block;
@@ -7,39 +8,57 @@
   line-height: 2.25em;
   padding: 0 15px;
   transition: box-shadow .3s ease-in-out;
-  background-color: darken($text-white, 2%);
   border-radius: 1px;
   overflow: hidden;
   text-decoration: none;
   color: $text-dark;
 }
 
-.Row {
+.Rounds {
+  h3 {
+    text-align: center;
+  }
+}
+
+.RoundRow {
+  background-color: darken($text-white, 2%);
   font-family: $font-stack-primary;
   text-decoration: none;
   display: flex;
   justify-content: space-between;
   padding: 0;
   margin: 0;
+  transition: background-color .3s ease-in-out,
+  color .3s ease-in-out;
 
   &:hover {
     cursor: pointer;
-   }
+    background-color: darken($text-white, 7%);
+    }
+  
+  &:nth-child(even) {
+    background-color: lighten($text-dark, 75%);
+
+    &:hover {
+      background-color: lighten($text-dark, 70%);
+    }
+  }
 
   &:last-of-type {
     box-shadow: 0 3px 5px 0 $text-dark;
   }
-  .name {
+
+  .course {
     @extend %span;
     flex: 1 0 40%;
   }
 
-  .city {
+  .date {
     @extend %span;
     flex: 1 1 40%;
   }
 
-  .state {
+  .score {
     @extend %span;
     flex: 0 0 20px;
   }
