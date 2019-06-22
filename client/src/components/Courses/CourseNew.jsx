@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBan, faSave, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faBan, faTrashAlt, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import uuidv4 from 'uuid/v4';
 import slugify from 'react-slugify';
 
@@ -33,11 +33,11 @@ class CourseEdit extends Component {
       address: '',
       state: '',
       zip: '',
+      holes: [],
       nameValid: true,
       nameUnique: true
     }
 
-    this.handleValidation = this.handleValidation.bind(this);
   }
 
 
@@ -46,7 +46,7 @@ class CourseEdit extends Component {
   // a second render initially on mounting. Research alternatives
   componentDidMount() {
     if (this.props.currentCourse) {
-      let { id, slug, name, city, address, state, zip } = this.props.currentCourse;
+      let { id, slug, name, city, address, state, zip, holes } = this.props.currentCourse;
 
       this.setState(() => ({
         isEditing: true,
@@ -56,33 +56,41 @@ class CourseEdit extends Component {
         city: city || '',
         address: address || '',
         state: state || '',
-        zip: zip || ''
+        zip: zip || '',
+        holes: holes || []
       }));
     }
   }
 
   // TODO: UNSAFE OPERATION! In future iteration make sure to sanitize
   // the data before storing it!
-  handleValidation() {
-    let { isEditing, name, address, city, state, zip, id } = this.state;
-    let { history } = this.props;
+  handleValidation = () => {
+    const { isEditing, name, address, city, state, zip, id, holes } = this.state;
+    const { history } = this.props;
     if (name) {
+      const slug = slugify(name);
       let newCourse = {
         id: isEditing ? id : uuidv4(),
         name,
-        slug: slugify(name),
+        slug,
         address,
         city,
         state,
         zip,
+        holes
       }
 
-      if (!this.props.handleSaveCourse(newCourse, history)) {
-        this.setState({ nameUnique: false })
+      if (this.props.handleSaveCourse(newCourse, history)) {
+        history.push(`/courses/${slug}/holes`);
+      } else {
+        this.setState({ nameUnique: false, nameValid: true })
+
       }
+
     } else {
       this.setState({ nameValid: false })
     }
+
   }
 
   handleInputChange(value, stateMember) {
@@ -221,10 +229,10 @@ class CourseEdit extends Component {
               <FontAwesomeIcon icon={faBan} />
             </LinkButton>
             <Button
-              text={this.state.isEditing ? "Update" : "Save"}
+              text="Holes"
               handleOnClick={this.handleValidation}
             >
-              <FontAwesomeIcon icon={faSave} />
+              <FontAwesomeIcon icon={faPlusCircle} />
             </Button>
           </ButtonContainer>
         </Container>

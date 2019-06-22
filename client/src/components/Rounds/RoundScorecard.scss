@@ -29,7 +29,8 @@ $margin-desktop: 315px;
     border: 1px solid $text-dark;
     text-align: center;
     padding: 5px;
-    max-width: 850px;
+    max-width: 750px;
+    box-shadow: 3px 3px 4px 3px $text-dark;
    
     h3 {
       display: inline-block;
@@ -78,7 +79,7 @@ $margin-desktop: 315px;
         min-height: 45px;
       }
 
-      .par, .eagle, .birdie, .bogie, .double {
+      .even, .eagle, .birdie, .bogie, .double {
         line-height: 40px;
         min-height: 40px;
         @media screen and (min-width: $screen-s) {
@@ -99,17 +100,17 @@ $margin-desktop: 315px;
         border: 2px solid $text-green;
       }
 
-      .par {
+      .even {
         border: 2px solid #FFF;
       }
 
       .bogie {
-        border: 2px solid $text-dark;
+        border: 2px solid $gray;
       }
 
       .double {
-        background: $text-dark;
-        border: 2px solid $text-dark;
+        background: $gray;
+        border: 2px solid $gray;
         color: $text-white;
       }
     }

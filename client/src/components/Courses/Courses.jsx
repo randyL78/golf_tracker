@@ -1,14 +1,20 @@
 // dependencies
 import React from 'react';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlusSquare } from '@fortawesome/free-solid-svg-icons';
+import { faPlusSquare, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 
 // components
 import { LinkButton } from "../../shared/Buttons/Button";
 import { Logo, Navigation, Title } from '../../shared/Layout';
-import Row from './CourseRow';
+// import CourseRow from './CourseRow';
 import Container, { ButtonContainer, RowContainer } from '../../shared/Containers/Container';
+
+// other course components
+import CourseAddHoles from './CourseAddHoles';
+import CourseDisplay from './CourseDisplay';
+import CourseNew from './CourseNew';
 
 // styles
 import styles from './Courses.scss';
@@ -19,23 +25,27 @@ import styles from './Courses.scss';
  * @param {screenSize, courses, handleDeleteCourse} props 
  */
 const Courses = ({ screenSize, courses, handleDeleteCourse }) =>
-  <div>
+  <div className={styles.Courses}>
     <Logo inline={true} />
     <Navigation showMenu={screenSize !== 'large'} />
     <Container >
       <Title title="Courses" />
       <RowContainer className={styles.rowContainer}>
         {
-          courses.map(({ id, slug, name, city, state }) =>
-            <Row
-              key={id}
-              id={id}
-              slug={slug}
-              name={name}
-              city={city}
-              state={state}
-              handleDeleteCourse={handleDeleteCourse} />
-          )
+          courses.length > 0
+            ?
+            courses.map(({ id, slug, name, city, state }) =>
+              <CourseRow
+                key={id}
+                id={id}
+                slug={slug}
+                name={name}
+                city={city}
+                state={state}
+                handleDeleteCourse={handleDeleteCourse} />
+            )
+            :
+            <h3>No Course Information Available</h3>
         }
       </RowContainer>
       <ButtonContainer>
@@ -61,3 +71,29 @@ Courses.propTypes = {
 }
 
 export default Courses;
+
+export { CourseAddHoles, CourseDisplay, CourseNew };
+
+
+/**
+ * CourseRow
+ * Displays the basic information of a single course
+ * @param { id, name, city, state, handleDeleteCourse } props
+ */
+const CourseRow = ({ id, slug, name, city, state, handleDeleteCourse }) =>
+  <p className={styles.CourseRow}>
+    <Link to={`/courses/${slug}`} className={styles.name}>{name}</Link>
+    <Link to={`/courses/${slug}`} className={styles.city}>{city}</Link>
+    <Link to={`/courses/${slug}`} className={styles.state}>{state}</Link>
+    <button className={styles.delete} onClick={() => handleDeleteCourse(slug)} >
+      <FontAwesomeIcon icon={faTrashAlt} />
+    </button>
+  </p>
+
+CourseRow.propTypes = {
+  name: PropTypes.string.isRequired,
+  slug: PropTypes.string.isRequired,
+  city: PropTypes.string,
+  state: PropTypes.string,
+  handleDeleteCourse: PropTypes.func.isRequired
+}
