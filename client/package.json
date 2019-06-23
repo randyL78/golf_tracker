@@ -47,5 +47,6 @@
   "license": "MIT",
   "repository": {
     "git": "https://github.com/randyL78/golf_tracker/tree/master/client"
-  }
+  },
+  "proxy": "http://localhost:3001"
 }
