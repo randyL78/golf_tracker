@@ -10,6 +10,7 @@
     "http-errors": "^1.7.2",
     "mongoose": "^5.5.9",
     "nodemon": "^1.19.0",
+    "shortid": "^2.2.14",
     "slug": "^1.1.0"
   },
   "devDependencies": {

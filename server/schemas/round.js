@@ -1,5 +1,6 @@
 // Dependencies
 import mongoose, { Schema } from 'mongoose';
+import shortid from 'shortid';
 
 const ObjectId = Schema.Types.ObjectId;
 
@@ -8,7 +9,10 @@ import Hole from './hole';
 
 // Define round schema
 const roundSchema = new Schema({
-  _id: ObjectId,
+  _id: {
+    type: String,
+    default: shortid.generate
+  },
   course: {
     type: ObjectId,
     ref: 'Course'
