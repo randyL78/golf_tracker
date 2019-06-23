@@ -33,7 +33,7 @@ const holeSchema = new Schema({
     default: null
   },
   round: {
-    type: Schema.Types.ObjectId,
+    type: String,
     ref: 'Round'
   }
 });

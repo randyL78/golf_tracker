@@ -11,7 +11,6 @@ import Hole from './hole';
 const roundSchema = new Schema({
   _id: {
     type: String,
-    default: shortid.generate
   },
   course: {
     type: ObjectId,

@@ -1,5 +1,6 @@
 // dependencies
 import mongoose from 'mongoose';
+import shortid from 'shortid';
 
 // Import the schema
 import Round from '../schemas/round';
@@ -22,7 +23,7 @@ export function createRound(courseId, numberOfHoles, callback) {
 
   // create a new round
   const newRound = new Round({
-    _id: new mongoose.Types.ObjectId(),
+    _id: shortid.generate(),
     course: courseId
   });
 
@@ -55,7 +56,6 @@ export function createRound(courseId, numberOfHoles, callback) {
 
     if (err) callback(err);
   })
-
   callback(newRound);
 }
 
