@@ -1,0 +1,26 @@
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "debug": true
+      }
+    ],
+    "@babel/preset-react",
+    "airbnb"
+  ],
+  "plugins": [
+    [
+      "module-resolver",
+      {
+        "root": [
+          "./"
+        ],
+        "alias": {
+          "@components": "./src/components"
+        }
+      }
+    ],
+    "@babel/plugin-proposal-class-properties"
+  ]
+}

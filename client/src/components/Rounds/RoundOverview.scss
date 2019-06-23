@@ -1,0 +1,47 @@
+@import "../../globalSyles/variables";
+
+$margin-mobile: 265px;
+$margin-desktop: 285px;
+
+.HoleContainer {
+  text-align: center;
+  width: 270px;
+  margin: auto;
+  max-height: calc(100vh - #{$margin-mobile} );
+  overflow-y: scroll;
+  overflow-x: auto;
+  padding-top: 10px;
+ 
+  // allows change from 3x6 layout to 6x3
+  @media (min-width: $screen-m) {
+    width: 550px
+  }
+
+   // allow room for increase in button size
+  @media (min-width: $screen-l) {
+    height: calc(100vh - #{$margin-desktop} );
+    width: 700px;
+  }
+}
+
+.Hole {
+  display: inline-block;
+  width: 50px;
+  line-height: 25px;
+  font-family: $font-stack-links;
+  text-decoration: none;
+  border: 2px solid $text-white;
+  text-align: center;
+  margin: 5px 15px;
+  background: $text-dark;
+  box-shadow: 0 0 2px 2px $text-dark;
+  color: $text-white;
+  
+  @media (min-width: $screen-l) {
+    width: 75px;
+  }
+
+  span {
+    display: block;
+  }
+}
