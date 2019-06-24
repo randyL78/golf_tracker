@@ -21,8 +21,8 @@ router.get('/', (req, res) => {
 
 //POST add new course information
 router.post('/course/', (req, res) => {
-  const { name, address, zip } = req.body;
-  createCourse(name, address, zip, (data, error = false) => {
+  const { name, address, city, state, zip } = req.body;
+  createCourse(name, address, city, state, zip, (data, error = false) => {
     res.json({
       response: {
         message: data,
@@ -42,7 +42,7 @@ router.get('/course/:slug', (req, res) => {
 
 // PUT update specific course information by :id
 router.put('/course/:slug', (req, res) => {
-  const { params: { slug }, body: { name, address, zip } } = req;
+  const { params: { slug }, body: { name, address, city, state, zip } } = req;
   updateCourse(slug, name, address, zip, (message, updated) => {
     res.json({
       message,

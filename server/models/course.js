@@ -21,10 +21,12 @@ export function findCourse(slug, callback) {
 }
 
 // create a new course
-export function createCourse(name, address, zip, callback) {
+export function createCourse(name, address, city, state, zip, callback) {
   const newCourse = new Course({
     address,
     name,
+    city,
+    state,
     zip
   })
 
@@ -52,10 +54,12 @@ export function deleteCourse(slug, callback) {
 }
 
 // update a course
-export function updateCourse(slug, name, address, zip, callback) {
+export function updateCourse(slug, name, address, city, state, zip, callback) {
   const updatedCourse = {
     name,
     address,
+    city,
+    state,
     zip
   }
   // Use .updateOne because .update is deprecated

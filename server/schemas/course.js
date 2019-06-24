@@ -7,7 +7,9 @@ const courseSchema = new Schema({
   address: String,
   name: { type: String, required: true },
   slug: { type: String, unique: true },
-  zip: { type: String, required: true }
+  city: String,
+  state: String,
+  zip: String
 });
 
 // add slug before saving
