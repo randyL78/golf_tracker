@@ -1,5 +1,5 @@
 // dependencies
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 
 // componenents
@@ -12,7 +12,7 @@ import Nav from './Nav';
  * button are displayed
  * @param {*} props 
  */
-class Navigation extends Component {
+class Navigation extends PureComponent {
 
   constructor(props) {
     super(props);

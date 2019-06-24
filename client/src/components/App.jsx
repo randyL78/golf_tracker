@@ -20,7 +20,8 @@ import Rounds, { RoundStart, RoundOverview, RoundScorecard, ScoreHole } from './
 import Statistics from './Statistics/Statistics';
 
 
-
+// named constants
+const API_URL = `/api/v1/`;
 
 /**
  * Main App component responsible for handling routes, redirection,
@@ -29,10 +30,28 @@ import Statistics from './Statistics/Statistics';
  */
 class App extends Component {
 
+
+
+  // constructor
   constructor(props) {
     super(props)
 
-    this.state = initialState;
+    this.state = {
+      // screen size state to adjust layout by
+      screenSize: 'small',
+
+      // state for managing round routes
+      currentRound: null,
+
+      // set to true to test styling
+      isInARound: false,
+
+      // set an empty array for the courses
+      courses: [],
+
+      // container for error messages from the API
+      error: null
+    }
   }
 
   /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -41,10 +60,28 @@ class App extends Component {
 
   // add event listen to detect window resizing.
   componentDidMount() {
-    this.setState({
-      screenSize: this.getScreenSize()
-    })
     window.addEventListener('resize', this.updateScreenSize);
+
+    // url for getting all course data
+    const coursesUrl = `${API_URL}courses`;
+
+    // fetch all course data
+    fetch(coursesUrl)
+      .then(data => data.json())
+      .then(courses =>
+        this.setState({
+          courses,
+          isCoursesLoading: false
+        })
+      ).catch(error =>
+        this.setState({ error })
+      )
+
+    this.setState({
+      isCoursesLoading: true
+    })
+
+
   }
 
   // remove the window resizing event listener
@@ -54,8 +91,8 @@ class App extends Component {
 
 
   /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-   *          Screen Methods
-   * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
+    *          Screen Methods
+    * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
 
   // update `screenSize` based on browser window width
   updateScreenSize = () => {
@@ -85,21 +122,68 @@ class App extends Component {
   }
 
   /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-   *          Course Related Methods
-   * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
+    *          Course Related Methods
+    * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
+
+
+  // get all courses.
+  getCourses = () => {
+    const url = `${API_URL}courses`;
+
+    fetch(url)
+      .then(data => data.json())
+      .then(courses =>
+        this.setState({
+          courses,
+          isCoursesLoading: false
+        })
+      ).catch(error =>
+        this.setState({ error })
+      )
+
+    this.setState({
+      isCoursesLoading: true
+    })
+
+  }
 
   // get the details of a specific course
-  getCourse = slug => {
-    return this.state.data.courses.find(course => course.slug === slug) || false;
+  setCurrentCourse = slug => {
+    const currentCourse = this.state.courses.find(course => course.slug === slug);
+
+    if (currentCourse) {
+      this.setState({
+        currentCourse: ({
+          '_id': currentCourse['_id'],
+          name: currentCourse.name,
+          city: currentCourse.city || '',
+          address: currentCourse.address || '',
+          state: currentCourse.state || '',
+          zip: currentCourse.zip || '',
+          holes: currentCourse.holes || []
+        }),
+        isCourseLoading: false
+      })
+    } else {
+
+
+    }
   }
 
   // delete the course at the current row
   handleDeleteCourse = slug => {
-    let updatedCourses = this.state.data.courses.filter(course => course.slug !== slug);
+    let courses = this.state.courses.filter(course => course.slug !== slug);
+    this.setState({ courses });
 
-    let data = { ...this.state.data, courses: updatedCourses };
+    // url for the course delete route of the API
+    const url = `${API_URL}courses/course/${slug}`;
 
-    this.setState({ data });
+    // delete course from database
+    fetch(url, { method: 'DELETE' })
+      .catch(error =>
+        this.setState({ error })
+      )
+
   }
 
   // handle saving a new course
@@ -149,12 +233,12 @@ class App extends Component {
   }
 
   /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-   *          Round Related Methods
-   * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
+    *          Round Related Methods
+    * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
 
   // get round information for a round with a specific id 
   getRound = id => {
-    let round = this.state.data.rounds.find(round => round.id === id);
+    let round = this.state.rounds.find(round => round.id === id);
     return round;
   }
 
@@ -181,7 +265,7 @@ class App extends Component {
 
     // TODO: Save the round to the database, for now
     // just push to state.
-    const rounds = [this.state.currentRound, ...this.state.data.rounds];
+    const rounds = [this.state.currentRound, ...this.state.rounds];
 
     // reset the current round and take out `in a round` state
     this.setState(prevState => ({
@@ -204,7 +288,7 @@ class App extends Component {
         currentRound: null,
       })
     } else {
-      let updatedRounds = this.state.data.rounds.filter(round => round.id !== id);
+      let updatedRounds = this.state.rounds.filter(round => round.id !== id);
 
       let data = { ...this.state.data, rounds: updatedRounds };
 
@@ -236,7 +320,7 @@ class App extends Component {
       round.holes[holeNumber - 1] = currentHole;
 
       const rounds = [
-        ...this.state.data.rounds.filter(round => round.id !== roundId),
+        ...this.state.rounds.filter(round => round.id !== roundId),
         round
       ]
 
@@ -263,18 +347,14 @@ class App extends Component {
       }));
     }
 
-
-
-
     return true;
-
   }
 
 
 
   /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-   *         Render the App
-   * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
+    *         Render the App
+    * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
   render = () =>
     <BrowserRouter>
       <div className={styles.App}>
@@ -282,30 +362,33 @@ class App extends Component {
         <Route exact path="/" render={() => <Redirect to="/home" />} />
 
         {/* If user enters bad course name in url, redirect to course overview */}
-        <Route path="/courses/:courseSlug" render={props =>
-          props.match.params.courseSlug !== 'new' &&
-            !this.getCourse(props.match.params.courseSlug)
-            ?
-            <Redirect to="/courses" /> : ''
-        } />
+        {/* <Route path="/courses/:courseSlug" render={props =>
+      props.match.params.courseSlug !== 'new' &&
+        !this.getCourse(props.match.params.courseSlug)
+        ?
+        <Redirect to="/courses" /> : ''
+    } /> */}
 
         <Switch>
           <Route exact path="/home" render={() => <Home screenSize={this.state.screenSize} />} />
 
           {/* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=            
-                  Course Routes 
-            */}
+              Course Routes 
+        */}
           {/* Display all courses */}
           <Route exact path="/courses" render={() =>
             <Courses
               screenSize={this.state.screenSize}
-              courses={this.state.data.courses}
+              courses={this.state.courses}
+              getCourses={this.getCourses}
               handleDeleteCourse={this.handleDeleteCourse}
+              isLoading={this.state.isCoursesLoading}
             />} />
 
           {/* Create a new course */}
           <Route exact path="/courses/new" render={props =>
             <CourseNew
+              isLoading={false}
               history={props.history}
               screenSize={this.state.screenSize}
               handleSaveCourse={this.handleSaveCourse} />}
@@ -317,7 +400,10 @@ class App extends Component {
               handleDeleteCourse={this.handleDeleteCourseAndRedirect}
               screenSize={this.state.screenSize}
               history={props.history}
-              course={this.getCourse(props.match.params.courseSlug)}
+              course={this.state.currentCourse}
+              setCourse={this.setCurrentCourse}
+              courseSlug={props.match.params.courseSlug}
+              isLoading={this.state.isCoursesLoading}
             />} />
 
           {/* edit an existing course */}
@@ -326,8 +412,11 @@ class App extends Component {
               handleDeleteCourse={this.handleDeleteCourseAndRedirect}
               screenSize={this.state.screenSize}
               history={props.history}
-              currentCourse={this.getCourse(props.match.params.courseSlug)}
+              currentCourse={this.state.currentCourse}
+              setCourse={this.setCurrentCourse}
               handleSaveCourse={this.handleUpdateCourse}
+              courseSlug={props.match.params.courseSlug}
+              isLoading={this.state.isCoursesLoading}
             />} />
 
           {/* edit par for holes of a course */}
@@ -336,25 +425,25 @@ class App extends Component {
               handleDeleteCourse={this.handleDeleteCourseAndRedirect}
               screenSize={this.state.screenSize}
               history={props.history}
-              currentCourse={this.getCourse(props.match.params.courseSlug)}
+              currentCourse={this.state.currentCourse}
               handleSaveCourse={this.handleUpdateCourse}
             />} />
 
           {/* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=            
-                  Statistics Routes 
-            */}
+              Statistics Routes 
+        */}
           {/* statistics routes */}
           <Route exact path="/statistics" render={() => <Statistics screenSize={this.state.screenSize} />} />
 
           {/* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=            
-                  Round Routes 
-            */}
+              Round Routes 
+        */}
 
           {/* Display all rounds */}
           <Route exact path="/rounds" render={() =>
             <Rounds
               screenSize={this.state.screenSize}
-              rounds={this.state.data.rounds}
+              rounds={this.state.rounds}
               currentRound={this.state.currentRound}
               btnText={this.state.isInARound ? "Cont" : "New"}
               handleDeleteRound={this.handleDeleteRound}
@@ -362,13 +451,13 @@ class App extends Component {
 
           } />
 
-          {/* start a new round */}
+      {/* start a new round */}
           {/* if currently in a round, will redirect to round overview */}
           <Route exact path="/rounds/start" render={props =>
             !this.state.isInARound ?
               <RoundStart
                 screenSize={this.state.screenSize}
-                courses={this.state.data.courses}
+                courses={this.state.courses}
                 history={props.history}
                 handleStartRound={this.handleStartRound}
               />
@@ -462,8 +551,8 @@ class App extends Component {
           />
 
           {/* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=            
-                  Error Routes 
-            */}
+              Error Routes 
+        */}
           {/* Manually directed "Not found" error route */}
           <Route path="/404" render={() =>
             <ErrorPage

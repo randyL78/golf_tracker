@@ -2,6 +2,11 @@
 
 .CourseNew {
 
+  h3 {
+    font-family: $font-stack-headlines;
+    color: $text-dark;
+  }
+
   label {
     flex-basis: 100%;
     margin-bottom: .5em;
