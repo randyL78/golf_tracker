@@ -6,6 +6,7 @@ import {
   createHole,
   findAllHoles,
   findHoleById,
+  findHolesByCourse,
   deleteHole,
   updateHole
 } from '../../models/hole';
@@ -25,6 +26,20 @@ router.get('/hole/:id', (req, res) => {
   const { params: { id } } = req;
 
   findHoleById(id, (data, error = false) => {
+    res.json({
+      response: {
+        message: data,
+        saved: !error
+      }
+    });
+  })
+});
+
+// GET holes by course
+router.get('/course/:id', (req, res) => {
+  const { params: { id } } = req;
+
+  findHolesByCourse(id, (data, error = false) => {
     res.json({
       response: {
         message: data,
@@ -64,9 +79,9 @@ router.delete('/hole/:id', (req, res) => {
 });
 
 router.put('/hole/:id', (req, res) => {
-  const { params: { id }, body: { number, par, strokes, putts, fairway } } = req;
+  const { params: { id }, body: { number, par, strokes, putts, fairway, round, course } } = req;
 
-  updateHole(id, number, par, strokes, putts, fairway, (message, updated) => {
+  updateHole(id, number, par, strokes, putts, fairway, round, course, (message, updated) => {
     res.json({
       message,
       updated

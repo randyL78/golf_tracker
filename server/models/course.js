@@ -1,6 +1,8 @@
 // Import the schema
 import Course from '../schemas/course';
 
+// Import sub document model
+import Hole from '../schemas/hole';
 
 // find all courses
 export function findAllCourses(callback) {
@@ -9,11 +11,12 @@ export function findAllCourses(callback) {
       console.error(error);
       return false;
     }
+
     callback(courses);
   })
 }
 
-// find course by id
+// find course by slug
 export function findCourse(slug, callback) {
   Course.find({ slug }, (error, course) => {
     callback(error ? error : course);
@@ -29,6 +32,29 @@ export function createCourse(name, address, city, state, zip, callback) {
     state,
     zip
   })
+
+  // array to store all of the Hole ObjectIds
+  const holes = [];
+
+  // loop through the numberOfHole and create a new Hole 
+  for (let i = 1; i <= 18; i++) {
+    const hole = new Hole({
+      number: i,
+      // reference the round id to connect the holes to the rounds
+      course: newCourse._id
+    })
+
+    // save each hole
+    hole.save(function (err) {
+
+      if (err) callback(err);
+    });
+
+    // add the Hole ObjectId to holes array
+    holes.push(hole._id);
+  }
+
+  newCourse.addHoles(holes);
 
   newCourse.save(error => {
     if (error) {

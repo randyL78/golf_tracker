@@ -43,7 +43,7 @@ router.get('/course/:slug', (req, res) => {
 // PUT update specific course information by :id
 router.put('/course/:slug', (req, res) => {
   const { params: { slug }, body: { name, address, city, state, zip } } = req;
-  updateCourse(slug, name, address, zip, (message, updated) => {
+  updateCourse(slug, name, address, city, state, zip, (message, updated) => {
     res.json({
       message,
       updated

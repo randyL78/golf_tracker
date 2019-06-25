@@ -1,5 +1,4 @@
 // dependencies
-import mongoose from 'mongoose';
 import shortid from 'shortid';
 
 // Import the schema

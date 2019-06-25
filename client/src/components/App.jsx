@@ -125,6 +125,9 @@ class App extends Component {
     *          Course Related Methods
     * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
 
+  // get a specific course's information by it's slug
+  getCourse = slug =>
+    this.state.courses.find(course => course.slug === slug);
 
   // get all courses.
   getCourses = () => {
@@ -133,6 +136,7 @@ class App extends Component {
     fetch(url)
       .then(data => data.json())
       .then(courses =>
+        // TODO: Sort the courses before setting state
         this.setState({
           courses,
           isCoursesLoading: false
@@ -144,7 +148,91 @@ class App extends Component {
     this.setState({
       isCoursesLoading: true
     })
+  }
 
+  getHolesByCourse = courseId => {
+    const url = `${API_URL}holes/course/${courseId}`;
+    fetch(url)
+      .then(data => data.json())
+      .then(res => res.response.message)
+      .then(holes =>
+        this.setState({
+          holes,
+          areHolesLoading: false
+        })
+      ).catch(error =>
+        this.setState({ error })
+      )
+
+    this.setState({ areHolesLoading: true });
+  }
+
+  // delete the course at the current row
+  handleDeleteCourse = slug => {
+    let courses = this.state.courses.filter(course => course.slug !== slug);
+    this.setState({ courses });
+
+    // url for the course delete route of the API
+    const url = `${API_URL}courses/course/${slug}`;
+
+    // delete course from database
+    fetch(url, { method: 'DELETE' })
+      .catch(error =>
+        this.setState({ error })
+      )
+
+  }
+
+
+  handleDeleteCourseAndRedirect = (slug, history) => {
+    this.handleDeleteCourse(slug)
+
+    history.push('/courses');
+  }
+
+  // handle saving a new course
+  handleSaveCourse = (newCourse) => {
+    if (this.getCourse(newCourse.slug)) {
+      return false;
+    }
+
+    // save course to database
+    const url = `${API_URL}courses/course`;
+    fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newCourse)
+    })
+      // refresh courselist in state
+      // Can't just update state from `newCourse` because Mongo
+      // creates it's own ids
+      .then(this.getCourses())
+      .catch(error => this.setState({ error }));
+    return true;
+  }
+
+
+  // handle updating a course
+  handleUpdateCourse = (updatedCourse) => {
+    const existingCourse = this.getCourse(updatedCourse.slug);
+    if (existingCourse && existingCourse['_id'] !== updatedCourse.id) {
+      return false;
+    }
+
+    // save course to database
+    const url = `${API_URL}courses/course/${updatedCourse.slug}`;
+    fetch(url, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatedCourse)
+    })
+      // refresh courselist in state
+      // Can't just update state from `newCourse` because Mongo
+      // creates it's own ids
+      .then(this.getCourses())
+      .catch(error => this.setState({ error }));
+
+    return true;
   }
 
   // get the details of a specific course
@@ -164,72 +252,22 @@ class App extends Component {
         }),
         isCourseLoading: false
       })
-    } else {
-
-
     }
   }
 
-  // delete the course at the current row
-  handleDeleteCourse = slug => {
-    let courses = this.state.courses.filter(course => course.slug !== slug);
-    this.setState({ courses });
+  // update the course's holes for par adjustments
+  updateHolePars = holes => {
+    holes.map(hole => {
+      const url = `${API_URL}holes/hole/${hole._id}`;
+      fetch(url, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(hole)
+      }).catch(error => this.setState({ error }));
 
-    // url for the course delete route of the API
-    const url = `${API_URL}courses/course/${slug}`;
-
-    // delete course from database
-    fetch(url, { method: 'DELETE' })
-      .catch(error =>
-        this.setState({ error })
-      )
-
-  }
-
-  // handle saving a new course
-  handleSaveCourse = (newCourse) => {
-
-    if (this.getCourse(newCourse.slug)) {
-      return false;
-    }
-
-    this.setState(prevState => ({
-      data: {
-        ...prevState.data,
-        courses: [
-          ...prevState.data.courses,
-          newCourse
-        ]
-      }
-    }))
+    })
 
     return true;
-  }
-
-  // handle updating a course
-  handleUpdateCourse = (updatedCourse) => {
-    const existingCourse = this.getCourse(updatedCourse.slug);
-    if (existingCourse && existingCourse.id !== updatedCourse.id) {
-      return false;
-    }
-
-    let updatedCourses = this.state.data.courses.map(course =>
-      (course.id === updatedCourse.id) ? updatedCourse : course)
-
-    this.setState(prevState => ({
-      data: {
-        ...prevState.data,
-        courses: updatedCourses
-      }
-    }))
-
-    return true;
-  }
-
-  handleDeleteCourseAndRedirect = (slug, history) => {
-    this.handleDeleteCourse(slug)
-
-    history.push('/courses');
   }
 
   /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -263,8 +301,6 @@ class App extends Component {
   // save round progress
   handleSaveRound = history => {
 
-    // TODO: Save the round to the database, for now
-    // just push to state.
     const rounds = [this.state.currentRound, ...this.state.rounds];
 
     // reset the current round and take out `in a round` state
@@ -276,7 +312,6 @@ class App extends Component {
         rounds
       }
     }))
-
     history.push('/home');
   }
 
@@ -400,8 +435,8 @@ class App extends Component {
               handleDeleteCourse={this.handleDeleteCourseAndRedirect}
               screenSize={this.state.screenSize}
               history={props.history}
-              course={this.state.currentCourse}
-              setCourse={this.setCurrentCourse}
+              course={this.getCourse(props.match.params.courseSlug)}
+              // setCourse={this.setCurrentCourse}
               courseSlug={props.match.params.courseSlug}
               isLoading={this.state.isCoursesLoading}
             />} />
@@ -412,8 +447,8 @@ class App extends Component {
               handleDeleteCourse={this.handleDeleteCourseAndRedirect}
               screenSize={this.state.screenSize}
               history={props.history}
-              currentCourse={this.state.currentCourse}
-              setCourse={this.setCurrentCourse}
+              currentCourse={this.getCourse(props.match.params.courseSlug)}
+              // setCourse={this.setCurrentCourse}
               handleSaveCourse={this.handleUpdateCourse}
               courseSlug={props.match.params.courseSlug}
               isLoading={this.state.isCoursesLoading}
@@ -423,10 +458,15 @@ class App extends Component {
           <Route exact path="/courses/:courseSlug/holes" render={props =>
             <CourseAddHoles
               handleDeleteCourse={this.handleDeleteCourseAndRedirect}
+              getHoles={this.getHolesByCourse}
               screenSize={this.state.screenSize}
               history={props.history}
-              currentCourse={this.state.currentCourse}
-              handleSaveCourse={this.handleUpdateCourse}
+              currentCourse={this.getCourse(props.match.params.courseSlug)}
+              handleSaveHoles={this.updateHolePars}
+              courseSlug={props.match.params.courseSlug}
+              isCoursesLoading={this.state.isCoursesLoading}
+              areHolesLoading={this.state.areHolesLoading}
+              holes={this.state.holes}
             />} />
 
           {/* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=            

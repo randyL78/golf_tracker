@@ -1,6 +1,8 @@
 // Dependencies
 import mongoose, { Schema } from 'mongoose';
 
+const ObjectId = Schema.Types.ObjectId;
+
 // Define Hole schema
 const holeSchema = new Schema({
   number: {
@@ -35,6 +37,10 @@ const holeSchema = new Schema({
   round: {
     type: String,
     ref: 'Round'
+  },
+  course: {
+    type: ObjectId,
+    ref: 'Course'
   }
 });
 

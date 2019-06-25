@@ -40,16 +40,14 @@ class CourseEdit extends Component {
   }
 
   // if a course is being edited, set the state by it
-  // TODO: this is not a very performant solution because it requires
-  // a second render initially on mounting. Research alternatives
   componentDidMount() {
-    const { courseSlug, setCourse, isLoading, currentCourse } = this.props;
+    const { currentCourse } = this.props;
     if (currentCourse) {
-      let { id, slug, name, city, address, state, zip, holes } = currentCourse;
+      let { slug, name, city, address, state, zip, holes } = currentCourse;
 
       this.setState(() => ({
         isEditing: true,
-        id,
+        id: this.props.currentCourse['_id'],
         name,
         slug,
         city: city || '',
@@ -59,28 +57,16 @@ class CourseEdit extends Component {
         holes: holes || []
       }));
     }
-
-    if (!isLoading && courseSlug)
-      setCourse(courseSlug);
   }
 
   componentDidUpdate = (prevProps) => {
 
-
-    // only update the component if the course name of the loading status changes
-    if (prevProps.courseSlug !== this.props.courseSlug ||
-      prevProps.isLoading !== this.props.isLoading) {
-      const { courseSlug, setCourse } = this.props;
-
-      setCourse(courseSlug);
-    }
-
     if (this.props.currentCourse && !prevProps.currentCourse) {
-      let { id, slug, name, city, address, state, zip, holes } = this.props.currentCourse;
+      let { slug, name, city, address, state, zip, holes } = this.props.currentCourse;
 
       this.setState(() => ({
         isEditing: true,
-        id,
+        id: this.props.currentCourse['_id'],
         name,
         slug,
         city: city || '',
@@ -109,7 +95,7 @@ class CourseEdit extends Component {
         holes
       }
 
-      if (this.props.handleSaveCourse(newCourse, history)) {
+      if (this.props.handleSaveCourse(newCourse)) {
         history.push(`/courses/${slug}/holes`);
       } else {
         this.setState({ nameUnique: false, nameValid: true })

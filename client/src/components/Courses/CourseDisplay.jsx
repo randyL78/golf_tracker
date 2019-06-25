@@ -17,27 +17,10 @@ import styles from './CourseDisplay.scss';
  * Component for displaying a single course
  */
 class CourseDisplay extends PureComponent {
-
-  componentDidMount = () => {
-    const { courseSlug, setCourse, isLoading } = this.props;
-
-    if (!isLoading)
-      setCourse(courseSlug);
-  }
-
-  componentDidUpdate = (prevProps) => {
-    // only update the component if the course name of the loading status changes
-    if (prevProps.courseSlug !== this.props.courseSlug ||
-      prevProps.isLoading !== this.props.isLoading) {
-      const { courseSlug, setCourse } = this.props;
-
-      setCourse(courseSlug);
-    }
-  }
-
-
   render = () => {
+
     const { course, courseSlug, screenSize, isLoading, handleDeleteCourse, history } = this.props
+
     return (
       <div className={styles.CourseDisplay}>
         <Logo inline={true} />

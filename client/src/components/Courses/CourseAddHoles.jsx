@@ -2,12 +2,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBan, faSave, faTrashAlt, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
+import { faSave } from '@fortawesome/free-solid-svg-icons';
 
 // components
-import { Logo, Navigation, Title } from '../../shared/Layout';
-import { Button, LinkButton } from '../../shared/Buttons/Button';
-import Container, { ButtonContainer, FormContainer } from '../../shared/Containers/Container';
+import { Logo, Navigation, Title, Loading } from '../../shared/Layout';
+import { Button } from '../../shared/Buttons/Button';
+import Container, { ButtonContainer } from '../../shared/Containers/Container';
 
 // styling
 import styles from './CourseAddHoles.scss';
@@ -28,34 +28,64 @@ class CourseAddHoles extends Component {
 
   componentDidMount() {
 
-    const { holes } = this.props.currentCourse;
+    if (!this.props.isCoursesLoading) {
 
-    // if the course doesn't have the holes built out yet, then build them
-    if (holes.length === 0) {
+      this.props.getHoles(this.props.currentCourse._id);
 
-      for (let i = 1; i <= 18; i++) {
-        holes.push({
-          number: i,
-          par: 0,
-          strokes: null,
-          putts: null,
-          fairway: null
-        })
+      const holes = this.props.currentCourse.holes || [];
+
+      // if the course doesn't have the holes built out yet, then build them
+      if (holes.length === 0) {
+
+        for (let i = 1; i <= 18; i++) {
+          holes.push({
+            number: i,
+            par: 4,
+            strokes: null,
+            putts: null,
+            fairway: null
+          })
+        }
       }
+
+      this.setState({
+        holes
+      })
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (!this.props.isCoursesLoading && prevProps.isCoursesLoading) {
+      this.props.getHoles(this.props.currentCourse._id);
     }
 
-    this.setState({
-      holes
-    })
+    if (!this.props.areHolesLoading && prevProps.areHolesLoading) {
+
+      const holes = this.props.holes
+
+      // if the course doesn't have the holes built out yet, then build them
+      if (holes.length === 0) {
+
+        for (let i = 1; i <= 18; i++) {
+          holes.push({
+            number: i,
+            par: 4,
+            strokes: null,
+            putts: null,
+            fairway: null
+          })
+        }
+      }
+
+      this.setState({
+        holes
+      })
+    }
   }
 
   handleValidation = () => {
-    const currentCourse = {
-      ...this.props.currentCourse,
-      holes: this.state.holes
-    }
 
-    this.props.handleSaveCourse(currentCourse);
+    this.props.handleSaveHoles(this.state.holes);
 
     this.props.history.push(`/courses`);
   }
@@ -84,25 +114,32 @@ class CourseAddHoles extends Component {
 
   render() {
     const holes = this.state.holes;
-    const { screenSize } = this.props;
+    const { screenSize, isCourseLoading, areHolesLoading } = this.props;
     return (
       <div>
         <Logo inline={true} />
         <Navigation showMenu={screenSize !== 'large'} />
         <Container >
           <Title title="Edit Holes" />
-          <form className={styles.CourseAddHoles}>
-            {
-              holes.map(hole =>
-                <Hole
-                  key={hole.number}
-                  number={hole.number}
-                  par={hole.par}
-                  onParChange={this.handleParChange}
-                />
-              )
-            }
-          </form>
+          {
+            isCourseLoading || areHolesLoading
+              ?
+              <Loading />
+              :
+              <form className={styles.CourseAddHoles}>
+                {
+                  holes.map(hole =>
+                    <Hole
+                      key={hole.number}
+                      number={hole.number}
+                      par={hole.par}
+                      onParChange={this.handleParChange}
+                    />
+                  )
+                }
+              </form>
+          }
+
           <ButtonContainer>
             <Button
               text="Save"
@@ -115,6 +152,11 @@ class CourseAddHoles extends Component {
       </div>
     );
   }
+}
+
+CourseAddHoles.defaultProps = {
+  isCoursesLoading: true,
+  areHolesLoading: true
 }
 
 

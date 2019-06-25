@@ -34,6 +34,17 @@ export function findHoleByRoundNumber(round, hole, callback) {
   });
 }
 
+// find holes by course
+export function findHolesByCourse(courseId, callback) {
+  Hole.find({ course: courseId }, (error, holes) => {
+    if (error) {
+      callback(error, true);
+    } else {
+      callback(holes);
+    }
+  })
+}
+
 // create a new hole
 export function createHole(number, par, strokes, putts, fairway, callback) {
   const newHole = new Hole({
@@ -65,13 +76,15 @@ export function deleteHole(id, callback) {
 }
 
 // update a hole
-export function updateHole(id, number, par, strokes, putts, fairway, callback) {
+export function updateHole(id, number, par, strokes, putts, fairway, round, course, callback) {
   const updatedHole = {
     number,
     par,
     strokes,
     putts,
-    fairway
+    fairway,
+    round,
+    course
   };
 
   Hole.updateOne({ _id: id }, updatedHole, (error, hole) => {
