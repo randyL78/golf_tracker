@@ -7,7 +7,7 @@ import { faTimesCircle, faSave, faEye } from '@fortawesome/free-solid-svg-icons'
 
 // components
 import Container, { ButtonContainer } from '../../shared/Containers/Container';
-import { Title, Navigation, Logo } from '../../shared/Layout';
+import { Title, Navigation, Logo, Loading } from '../../shared/Layout';
 import { Button, LinkButton } from '../../shared/Buttons/Button';
 
 // styling
@@ -18,7 +18,12 @@ import styles from './RoundOverview.scss';
  * RoundOverview.jsx
  * Displays links to individual holes in a golf round
  */
-const RoundOverview = ({ screenSize, holes, history, handleSaveRound, handleQuitRound }) => {
+const RoundOverview = ({ screenSize, history, handleSaveRound, handleQuitRound }) => {
+  const holes = [];
+  for (let i = 1; i <= 18; i++) {
+    holes.push({ number: i });
+  }
+
   return (
     <div className={styles.RoundOverview}>
       <Logo inline={true} />

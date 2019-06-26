@@ -129,8 +129,6 @@ class ScoreHole extends Component {
     const { screenSize, number } = this.props;
     const { par, strokes, putts, fairway } = currentHole;
 
-
-
     return (
       <div className={styles.ScoreHole} >
         <Logo inline={true} />

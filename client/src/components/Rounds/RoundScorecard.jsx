@@ -17,27 +17,27 @@ import styles from './RoundScorecard.scss';
  * RoundScorecard.jsx
  * Displays the Scorecard of the selected round
  */
-const RoundScorecard = ({ screenSize, round, history, isCurrent }) => {
-  if (!round) {
-    history.push('/404');
-    return false;
-  }
+const RoundScorecard = ({ screenSize, currentRound, course, date, holes, history, isCurrent }) => {
+  // if (currentRound.id) {
+  //   history.push('/404');
+  //   return false;
+  // }
 
-  let route = isCurrent ? `/rounds/start/hole-` : `/rounds/${round.id}/hole-`;
+  let route = isCurrent ? `/rounds/start/hole-` : `/rounds/${roundId}/hole-`;
 
   // create an enum for the months
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
   // create a 3 x 6 array of holes
-  const holes = Array.from({ length: 6 }, (value, index) => round.holes.slice(index * 3, index * 3 + 3))
+  const holesGrid = Array.from({ length: 6 }, (value, index) => holes.slice(index * 3, index * 3 + 3))
 
-  const score = round
-    .holes.map(hole => Number(hole.strokes))
+  const score = holes
+    .map(hole => Number(hole.strokes))
     .reduce((total, num) => total + num);
-  const par = round
-    .holes.map(hole => Number(hole.par))
+  const par = holes
+    .map(hole => Number(hole.par))
     .reduce((total, num) => total + num);
-  const date = new Date(round.date);
+  const roundDate = new Date(date);
 
   return (
     <div className={styles.RoundScorecard}>
@@ -47,16 +47,15 @@ const RoundScorecard = ({ screenSize, round, history, isCurrent }) => {
         <Title title="Scorecard" />
         <div className={styles.ScorecardContainer} >
           <div className={styles.Scorecard} >
-            <h2>{round.course}</h2>
-            <h2>{`${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`}</h2>
+            <h2>{course}</h2>
+            <h2>{`${months[roundDate.getMonth()]} ${roundDate.getDate()}, ${roundDate.getFullYear()}`}</h2>
             <h3 className={styles.par}>Par: {par}</h3>
             <h3 className={styles.score}>Score: {score}</h3>
 
-            {
-              holes.map((threeHoles, index) =>
-                <ScoreTable key={index} holes={threeHoles} route={route} />
-              )
-            }
+            {holesGrid.map((threeHoles, index) =>
+              <ScoreTable key={index} holes={threeHoles} route={route} />
+            )}
+
 
           </div>
         </div>

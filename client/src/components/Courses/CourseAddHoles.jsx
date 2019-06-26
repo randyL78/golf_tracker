@@ -26,56 +26,14 @@ class CourseAddHoles extends Component {
     }
   }
 
-  componentDidMount() {
-
-    if (!this.props.isCoursesLoading) {
-
-      this.props.getHoles(this.props.currentCourse._id);
-
-      const holes = this.props.currentCourse.holes || [];
-
-      // if the course doesn't have the holes built out yet, then build them
-      if (holes.length === 0) {
-
-        for (let i = 1; i <= 18; i++) {
-          holes.push({
-            number: i,
-            par: 4,
-            strokes: null,
-            putts: null,
-            fairway: null
-          })
-        }
-      }
-
-      this.setState({
-        holes
-      })
-    }
-  }
-
   componentDidUpdate(prevProps) {
-    if (!this.props.isCoursesLoading && prevProps.isCoursesLoading) {
+    if (!this.props.isCoursesLoading && prevProps.isCoursesLoading && this.props.currentCourse) {
       this.props.getHoles(this.props.currentCourse._id);
     }
 
-    if (!this.props.areHolesLoading && prevProps.areHolesLoading) {
+    if (!this.props.areHolesLoading && prevProps.areHolesLoading && !this.props.isCoursesLoadin) {
 
       const holes = this.props.holes
-
-      // if the course doesn't have the holes built out yet, then build them
-      if (holes.length === 0) {
-
-        for (let i = 1; i <= 18; i++) {
-          holes.push({
-            number: i,
-            par: 4,
-            strokes: null,
-            putts: null,
-            fairway: null
-          })
-        }
-      }
 
       this.setState({
         holes
