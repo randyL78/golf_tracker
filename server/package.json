@@ -6,9 +6,11 @@
   "dependencies": {
     "babel-preset-airbnb": "^3.2.1",
     "body-parser": "^1.19.0",
+    "concurrently": "^4.1.1",
     "express": "^4.17.0",
     "express-pino-logger": "^4.0.0",
     "http-errors": "^1.7.2",
+    "mongodb": "^3.2.7",
     "mongoose": "^5.5.9",
     "nodemon": "^1.19.0",
     "pino-colada": "^1.4.4",
@@ -27,7 +29,10 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app.js --exec babel-node | pino-colada"
+    "start-server": "nodemon app.js --exec babel-node | pino-colada",
+    "start-client": "cd ../client && npm start",
+    "start-db": "mongod --port 27019 --dbpath data",
+    "start": "concurrently \"npm run start-db\"  \"npm run start-server\" \"npm run start-client\""
   },
   "repository": {
     "type": "git",
