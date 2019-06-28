@@ -13,7 +13,7 @@ const holeSchema = new Schema({
   },
   par: {
     type: Number,
-    min: 3,
+    min: 2,
     max: 7,
     default: 4
   },
@@ -31,7 +31,7 @@ const holeSchema = new Schema({
   },
   fairway: {
     type: String,
-    enum: ['right', 'left', 'short', 'onTarget', null],
+    enum: ['Right', 'Left', 'Short', 'On Target', 'Long', null],
     default: null
   },
   round: {

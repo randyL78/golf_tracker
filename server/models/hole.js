@@ -34,6 +34,18 @@ export function findHoleByRoundNumber(round, hole, callback) {
   });
 }
 
+// find all holes for a round 
+export function findHolesByRoundNumber(round, callback) {
+
+  Hole.find({ round }, (error, hole) => {
+    if (error) {
+      callback(error, true);
+    } else {
+      callback(hole);
+    }
+  });
+}
+
 // find holes by course
 export function findHolesByCourse(courseId, callback) {
   Hole.find({ course: courseId }, (error, holes) => {

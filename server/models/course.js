@@ -18,6 +18,25 @@ export function findAllCourses(callback) {
   })
 }
 
+// finds all of the course names and course ids for mapping to other docs
+export function findAllCourseNames(callback) {
+  Course.find({}, '_id name', (error, courses) => {
+    if (error) {
+      console.error(error);
+      return false;
+    }
+
+    callback(courses);
+  })
+}
+
+// find course id by name
+export function findCourseId(name, callback) {
+  Course.findOne({ name }, (error, course) => {
+    callback(course._id);
+  })
+}
+
 // find course by slug
 export function findCourse(slug, callback) {
   Course.find({ slug }, (error, course) => {

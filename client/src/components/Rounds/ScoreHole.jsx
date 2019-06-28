@@ -5,7 +5,7 @@ import { faArrowAltCircleRight, faEye, faTimesCircle } from '@fortawesome/free-s
 
 // components
 import Container, { FormContainer, ButtonContainer } from '../../shared/Containers/Container';
-import { Title, Navigation, Logo } from '../../shared/Layout';
+import { Title, Navigation, Logo, Loading } from '../../shared/Layout';
 import { Button } from '../../shared/Buttons/Button';
 
 
@@ -25,40 +25,62 @@ class ScoreHole extends Component {
     this.state = {
       currentHole: {
         number: 0,
-        par: 0,
-        strokes: 0,
-        putts: 0,
-        fairway: 'On Target'
+        par: null,
+        strokes: null,
+        putts: null,
+        fairway: "On Target"
       }
     }
   }
 
   componentDidMount() {
-    const { currentHole } = this.props;
+    const { currentRound, number } = this.props;
 
+    if (!currentRound) return;
+
+    const { _id, par, strokes, putts, fairway } =
+      currentRound.holes[number - 1]
+
+    // if values don't exist, set to null for DB validation
     this.setState({
       currentHole: {
-        number: currentHole.number,
-        par: currentHole.par || 0,
-        strokes: currentHole.strokes || 0,
-        putts: currentHole.putts || 0,
-        fairway: currentHole.fairway || "On Target"
+        _id: _id || null,
+        number,
+        par: par || null,
+        strokes: strokes || null,
+        putts: putts || null,
+        fairway: fairway || "On Target"
       }
     })
+  }
 
+  // ensure save if user navigates to different route
+  componentWillUnmount() {
+    const { handleSaveHole, roundId } = this.props;
+    const { currentHole } = this.state;
+
+    handleSaveHole(currentHole, roundId)
   }
 
   componentDidUpdate(prevProps) {
-    if (prevProps.currentHole.number !== this.props.currentHole.number) {
-      const { currentHole } = this.props;
+    if (this.props.isLoading || !this.props.currentRound) return;
 
+    if (
+      !prevProps.currentRound ||
+      (prevProps.number !== this.props.number)
+    ) {
+      const { _id, number, par, strokes, putts, fairway } =
+        this.props.currentRound.holes[this.props.number - 1];
+
+      // if values don't exist, set to null for DB validation
       this.setState({
         currentHole: {
-          number: currentHole.number,
-          par: currentHole.par || 0,
-          strokes: currentHole.strokes || 0,
-          putts: currentHole.putts || 0,
-          fairway: currentHole.fairway || "On Target"
+          _id: _id || null,
+          number,
+          par: par || null,
+          strokes: strokes || null,
+          putts: putts || null,
+          fairway: fairway || "On Target"
         }
       })
     }
@@ -76,12 +98,12 @@ class ScoreHole extends Component {
 
   // reset the current hole state back to zeros
   handleReset = () => {
-    this.setState(({ number, par }) => ({
+    this.setState(prevState => ({
       currentHole: {
-        number,
-        par,
-        strokes: 0,
-        putts: 0,
+        number: prevState.number,
+        par: prevState.par,
+        strokes: null,
+        putts: null,
         fairway: 'On Target'
       }
     }))
@@ -105,28 +127,28 @@ class ScoreHole extends Component {
 
     // if its the final hole redirect to the round overview route
     // otherewise redirect to the next hole
-    number === 18 ?
+    Number(number) === 18 ?
       history.push(`/rounds/start/overview`) :
-      history.push(`${baseUrl}hole-${number + 1}`)
+      history.push(`${baseUrl}hole-${Number(number) + 1}`)
   }
 
   // handle saving current hole and redirecting to the scorecard
   viewScore = () => {
-    const { history, handleSaveHole, isCurrent, roundId } = this.props;
-    const { currentHole } = this.state;
-
-    handleSaveHole(currentHole, roundId)
+    const { history, isCurrent, roundId } = this.props;
 
     let url = isCurrent ? `/rounds/start/scorecard` : `/rounds/${roundId}/scorecard`
 
     history.push(url);
-
   }
 
   render() {
+    const { screenSize, number, isLoading } = this.props;
+
+    if (isLoading) {
+      return <Loading />
+    }
 
     const { currentHole } = this.state
-    const { screenSize, number } = this.props;
     const { par, strokes, putts, fairway } = currentHole;
 
     return (
@@ -136,6 +158,7 @@ class ScoreHole extends Component {
         <Container >
           <Title title={`Hole #${number}`} />
           <FormContainer>
+
             <table>
               <thead>
                 <tr>
@@ -151,7 +174,7 @@ class ScoreHole extends Component {
                     <input
                       type="number"
                       min="0" max="7"
-                      value={par}
+                      value={Number(par)}
                       readOnly
                     />
                   </td>
@@ -160,7 +183,7 @@ class ScoreHole extends Component {
                       type="number"
                       min="0"
                       max="14"
-                      value={strokes}
+                      value={Number(strokes)}
                       onChange={({ target }) =>
                         this.handleNumberChange(target.value, "strokes")}
                     />
@@ -170,7 +193,7 @@ class ScoreHole extends Component {
                       type="number"
                       min="0"
                       max={this.maxPutts()}
-                      value={putts}
+                      value={Number(putts)}
                       onChange={({ target }) =>
                         this.handleNumberChange(target.value, "putts")}
                     />
@@ -192,6 +215,7 @@ class ScoreHole extends Component {
               </tbody>
 
             </table>
+
           </FormContainer>
           <ButtonContainer>
             <Button text="Reset" style="Warning" handleOnClick={this.handleReset}>

@@ -13,7 +13,8 @@
     "nodemon": "^1.19.0",
     "pino-colada": "^1.4.4",
     "shortid": "^2.2.14",
-    "slug": "^1.1.0"
+    "slug": "^1.1.0",
+    "uuidv4": "^4.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.4.4",

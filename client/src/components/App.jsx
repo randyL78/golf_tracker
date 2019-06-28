@@ -2,9 +2,6 @@
 import React, { Component } from 'react';
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import shortid from 'shortid';
-import slugify from 'react-slugify';
-
-
 
 
 // styles
@@ -51,8 +48,14 @@ class App extends Component {
       // set an empty array to store holes that are being adjusted
       holes: [],
 
+      // set an empty array to store rounds 
+      rounds: [],
+
       // container for error messages from the API
       error: null,
+
+      // used to determine if the rounds have finished loading from the DB
+      isRoundsLoading: true
     }
   }
 
@@ -60,22 +63,24 @@ class App extends Component {
   *          Lifecycle Methods
   * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
 
-  // add event listen to detect window resizing.
-  componentDidMount() {
-    window.addEventListener('resize', this.updateScreenSize);
 
-    // url for getting all course data
-    const coursesUrl = `${API_URL}courses`;
+  componentDidMount() {
+
+    // add event listener to detect window resizing.
+    window.addEventListener('resize', this.updateScreenSize);
 
     // fetch all course data
     this.getCourses();
+
+    // fetch allrounds
+    this.getRounds();
+
   }
 
   // remove the window resizing event listener
   componentWillUnmount() {
     window.removeEventListener('resize', this.updateScreenSize);
   }
-
 
   /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     *          Screen Methods
@@ -140,6 +145,9 @@ class App extends Component {
   getCourseName = id =>
     this.state.courses.find(course => course._id === id).name;
 
+  getCourseSlug = id =>
+    this.state.courses.find(course => course._id === id).slug;
+
   getHolesByCourse = courseId => {
     this.setState({ areHolesLoading: true });
 
@@ -149,10 +157,14 @@ class App extends Component {
       .then(res => res.response.message)
       .then(holes => holes.sort((a, b) => a.number - b.number))
       .then(holes =>
-        this.setState({
+        this.setState(prevState => ({
           holes,
+          currentRound: {
+            ...prevState.currentRound,
+            holes
+          },
           areHolesLoading: false
-        })
+        }))
       ).catch(error =>
         this.setState({ error })
       )
@@ -250,15 +262,7 @@ class App extends Component {
 
   // update the course's holes for par adjustments
   updateHolePars = holes => {
-    holes.map(hole => {
-      const url = `${API_URL}holes/hole/${hole._id}`;
-      fetch(url, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(hole)
-      }).catch(error => this.setState({ error }));
-
-    })
+    holes.map(hole => this.updateHole(hole))
 
     return true;
   }
@@ -266,10 +270,29 @@ class App extends Component {
   /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     *          Round Related Methods
     * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
+  getRounds = () => {
+    this.setState({
+      isRoundsLoading: true
+    })
+
+    const url = `${API_URL}rounds`;
+
+    fetch(url)
+      .then(data => data.json())
+      .then(rounds => rounds.sort((a, b) => a.date > b.date ? 1 : -1))
+      .then(rounds =>
+        this.setState({
+          rounds,
+          isRoundsLoading: false
+        })
+      ).catch(error =>
+        this.setState({ error })
+      )
+  }
 
   // get round information for a round with a specific id 
   getRound = id => {
-    let round = this.state.rounds.find(round => round.id === id);
+    let round = this.state.rounds.find(round => round._id === id);
     return round;
   }
 
@@ -278,14 +301,18 @@ class App extends Component {
 
     this.getHolesByCourse(course)
 
-    this.setState({
+    this.setState(prevState => ({
       isInARound: true,
       currentRound: {
-        id: shortid.generate(),   // create a url friendly id
-        date: Date.now(),
-        course
+        _id: shortid.generate(),   // create a url friendly id
+        datePlayed: Date.now(),
+        course: {
+          name: this.getCourseName(course),
+          _id: course
+        },
+        holes: prevState.holes
       },
-    });
+    }));
 
     history.push('/rounds/start/overview');
   }
@@ -293,17 +320,23 @@ class App extends Component {
   // save round progress
   handleSaveRound = history => {
 
-    const rounds = [this.state.currentRound, ...this.state.rounds];
+    // save round to database
+    const url = `${API_URL}rounds/round`;
+    fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(this.state.currentRound)
+    })
+      // refresh the rounds
+      .then(res => { this.getRounds() })
+      .catch(error => this.setState({ error }));
 
     // reset the current round and take out `in a round` state
     this.setState(prevState => ({
       isInARound: false,
       currentRound: null,
-      data: {
-        ...prevState.data,
-        rounds
-      }
     }))
+
     history.push('/home');
   }
 
@@ -315,11 +348,13 @@ class App extends Component {
         currentRound: null,
       })
     } else {
-      let updatedRounds = this.state.rounds.filter(round => round.id !== id);
+      this.setState({ isRoundsLoading: true })
 
-      let data = { ...this.state.data, rounds: updatedRounds };
-
-      this.setState({ data });
+      const url = `${API_URL}rounds/round/${id}`
+      // send a delete request to API
+      fetch(url, { method: 'DELETE' })
+        // fetch the rounds back from API
+        .then(() => this.getRounds())
     }
   }
 
@@ -341,7 +376,9 @@ class App extends Component {
 
     // if a round id is present, find the round in the data and update it
     if (roundId) {
-      // TODO: I feel there is a refactor opportunity here
+
+      this.updateHole(currentHole);
+
       const round = this.getRound(roundId);
 
       round.holes[holeNumber - 1] = currentHole;
@@ -358,18 +395,36 @@ class App extends Component {
         }
       }));
 
+
+
       // otherwise save it as a current round
     } else {
       const holes = [
-        ...this.state.holes,
+        ...this.state.currentRound.holes,
       ]
 
       holes[holeNumber - 1] = currentHole;
 
-      this.setState({ holes });
+      this.setState(prevState => ({
+        currentRound: {
+          ...prevState.currentRound,
+          holes
+        }
+      }));
     }
 
     return true;
+  }
+
+
+  // update a single hole in the DB
+  updateHole = hole => {
+    const url = `${API_URL}holes/hole/${hole._id}`;
+    fetch(url, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(hole)
+    }).catch(error => this.setState({ error }));
   }
 
 
@@ -382,14 +437,6 @@ class App extends Component {
       <div className={styles.App}>
         {/* Redirect root route to the home route so that NavLink active class works properly */}
         <Route exact path="/" render={() => <Redirect to="/home" />} />
-
-        {/* If user enters bad course name in url, redirect to course overview */}
-        {/* <Route path="/courses/:courseSlug" render={props =>
-      props.match.params.courseSlug !== 'new' &&
-        !this.getCourse(props.match.params.courseSlug)
-        ?
-        <Redirect to="/courses" /> : ''
-    } /> */}
 
         <Switch>
           <Route exact path="/home" render={() => <Home screenSize={this.state.screenSize} />} />
@@ -515,7 +562,7 @@ class App extends Component {
               <ScoreHole
                 screenSize={this.state.screenSize}
                 number={props.match.params.number}
-                currentHole={this.state.holes[props.match.params.number - 1]}
+                currentRound={this.state.currentRound}
                 handleSaveHole={this.handleSaveHole}
                 history={props.history}
                 isCurrent={true}
@@ -527,21 +574,18 @@ class App extends Component {
 
           {/* form to enter score for a hole in a saved round */}
           <Route exact path="/rounds/:roundId/hole-:number" render={props =>
-            this.getRound(props.match.params.roundId)
-              ?
-              <ScoreHole
-                screenSize={this.state.screenSize}
-                number={props.match.params.number}
-                currentHole={this
-                  .getRound(props.match.params.roundId)
-                  .holes[props.match.params.number - 1]}
-                handleSaveHole={this.handleSaveHole}
-                history={props.history}
-                isCurrent={false}
-                roundId={props.match.params.roundId}
-              />
-              :
-              <Redirect to="/404" />
+
+            <ScoreHole
+              screenSize={this.state.screenSize}
+              number={props.match.params.number}
+              currentRound={this.getRound(props.match.params.roundId)}
+              handleSaveHole={this.handleSaveHole}
+              history={props.history}
+              isCurrent={false}
+              roundId={props.match.params.roundId}
+              isLoading={this.isRoundsLoading}
+            />
+
           }
           />
 
@@ -554,9 +598,6 @@ class App extends Component {
                 <RoundScorecard
                   screenSize={this.state.screenSize}
                   currentRound={this.state.currentRound}
-                  date={this.state.currentRound.date}
-                  course={this.getCourseName(this.state.currentRound.course)}
-                  holes={this.state.holes}
                   isCurrent={true}
                   history={props.history}
                 />
@@ -573,9 +614,11 @@ class App extends Component {
             render={props =>
               <RoundScorecard
                 screenSize={this.state.screenSize}
-                round={this.getRound(props.match.params.roundId)}
+                currentRound={this.getRound(props.match.params.roundId)}
                 history={props.history}
                 isCurrent={false}
+                roundId={props.match.params.roundId}
+                isLoading={this.state.isRoundsLoading}
               />
             }
           />

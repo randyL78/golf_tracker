@@ -7,7 +7,8 @@ import {
   findAllCourses,
   findCourse,
   deleteCourse,
-  updateCourse
+  updateCourse,
+  findAllCourseNames
 } from '../../models/course';
 
 const router = express.Router();
@@ -15,6 +16,14 @@ const router = express.Router();
 // GET all courses' information
 router.get('/', (req, res) => {
   findAllCourses(courses => {
+    res.json(courses);
+  })
+});
+
+// GET all course names and id's
+// NOTE: For Postman testing purposes only
+router.get('/names', (req, res) => {
+  findAllCourseNames(courses => {
     res.json(courses);
   })
 });

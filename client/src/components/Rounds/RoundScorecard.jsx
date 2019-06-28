@@ -1,13 +1,12 @@
 // dependencies
 import React from 'react';
 import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faArrowAltCircleRight } from '@fortawesome/free-solid-svg-icons';
 
 // components
 import Container, { ButtonContainer } from '../../shared/Containers/Container';
-import { Title, Navigation, Logo } from '../../shared/Layout';
+import { Title, Navigation, Logo, Loading } from '../../shared/Layout';
 import { LinkButton } from '../../shared/Buttons/Button';
 
 // styling
@@ -17,11 +16,20 @@ import styles from './RoundScorecard.scss';
  * RoundScorecard.jsx
  * Displays the Scorecard of the selected round
  */
-const RoundScorecard = ({ screenSize, currentRound, course, date, holes, history, isCurrent }) => {
-  // if (currentRound.id) {
-  //   history.push('/404');
-  //   return false;
-  // }
+const RoundScorecard = ({ screenSize, currentRound, history, roundId, isCurrent, isLoading }) => {
+
+  if (!isCurrent && !roundId && !isLoading) {
+    history.push('/404');
+    return false;
+  }
+
+  if (isLoading && !isCurrent) {
+    return (<Loading />);
+  }
+
+
+
+  const { course, holes, datePlayed } = currentRound;
 
   let route = isCurrent ? `/rounds/start/hole-` : `/rounds/${roundId}/hole-`;
 
@@ -37,7 +45,7 @@ const RoundScorecard = ({ screenSize, currentRound, course, date, holes, history
   const par = holes
     .map(hole => Number(hole.par))
     .reduce((total, num) => total + num);
-  const roundDate = new Date(date);
+  const roundDate = new Date(datePlayed);
 
   return (
     <div className={styles.RoundScorecard}>
@@ -47,7 +55,7 @@ const RoundScorecard = ({ screenSize, currentRound, course, date, holes, history
         <Title title="Scorecard" />
         <div className={styles.ScorecardContainer} >
           <div className={styles.Scorecard} >
-            <h2>{course}</h2>
+            <h2>{course.name}</h2>
             <h2>{`${months[roundDate.getMonth()]} ${roundDate.getDate()}, ${roundDate.getFullYear()}`}</h2>
             <h3 className={styles.par}>Par: {par}</h3>
             <h3 className={styles.score}>Score: {score}</h3>
@@ -59,6 +67,7 @@ const RoundScorecard = ({ screenSize, currentRound, course, date, holes, history
 
           </div>
         </div>
+
         <ButtonContainer>
           <LinkButton style="Info" text="View All" to="/rounds" >
             <FontAwesomeIcon icon={faEye} />
@@ -80,6 +89,7 @@ const RoundScorecard = ({ screenSize, currentRound, course, date, holes, history
     </div>
   )
 }
+
 
 export default RoundScorecard;
 
