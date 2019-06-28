@@ -1,8 +1,9 @@
+data
+
 ### OSX ###
 *.DS_Store
 .AppleDouble
 .LSOverride
-
 # Icon must end with two 
 Icon
 # Thumbnails
@@ -76,3 +77,11 @@ jspm_packages
 
 # Nuxt generate
 dist
+
+# MongoDB files
+server/data
+*.wt 
+*.bson
+*.turtle
+*.lock
+*.interim 
