@@ -1,5 +1,5 @@
 // dependencies
-import React from 'react';
+import React, { PureComponent } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -7,8 +7,7 @@ import { faPlusSquare, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 
 // components
 import { LinkButton } from "../../shared/Buttons/Button";
-import { Logo, Navigation, Title } from '../../shared/Layout';
-// import CourseRow from './CourseRow';
+import { Logo, Navigation, Title, Loading } from '../../shared/Layout';
 import Container, { ButtonContainer, RowContainer } from '../../shared/Containers/Container';
 
 // other course components
@@ -24,51 +23,66 @@ import styles from './Courses.scss';
  * Displays a list of Course information
  * @param {screenSize, courses, handleDeleteCourse} props 
  */
-const Courses = ({ screenSize, courses, handleDeleteCourse }) =>
-  <div className={styles.Courses}>
-    <Logo inline={true} />
-    <Navigation showMenu={screenSize !== 'large'} />
-    <Container >
-      <Title title="Courses" />
-      <RowContainer className={styles.rowContainer}>
-        {
-          courses.length > 0
-            ?
-            courses.map(({ id, slug, name, city, state }) =>
-              <CourseRow
-                key={id}
-                id={id}
-                slug={slug}
-                name={name}
-                city={city}
-                state={state}
-                handleDeleteCourse={handleDeleteCourse} />
-            )
-            :
-            <h3>No Course Information Available</h3>
-        }
-      </RowContainer>
-      <ButtonContainer>
-        <LinkButton to="/courses/new" text="New" >
-          <FontAwesomeIcon icon={faPlusSquare} />
-        </LinkButton>
-      </ButtonContainer>
-    </Container>
-  </div>
+class Courses extends PureComponent {
 
+  render = () => {
+    const { screenSize, courses, handleDeleteCourse, isLoading } = this.props;
+    return (
+      <div className={styles.Courses}>
+        <Logo inline={true} />
+        <Navigation showMenu={screenSize !== 'large'} />
+        <Container >
+          <Title title="Courses" />
+          <RowContainer className={styles.rowContainer}>
+            {
+              isLoading               // ternary condition 1
+                ?
+                <Loading />
+                :
+                courses.length > 0    // ternary condition 2
+                  ?
+                  courses.map(course =>
+                    <CourseRow
+                      key={course['_id']}
+                      id={course['_id']}
+                      slug={course.slug}
+                      name={course.name}
+                      city={course.city}
+                      state={course.state}
+                      handleDeleteCourse={handleDeleteCourse} />
+                  )
+                  :
+                  <h3>No Course Information Available</h3>
+            }
+          </RowContainer>
+          <ButtonContainer>
+            <LinkButton to="/courses/new" text="New" >
+              <FontAwesomeIcon icon={faPlusSquare} />
+            </LinkButton>
+          </ButtonContainer>
+        </Container>
+      </div>
+    )
+  };
+}
 Courses.propTypes = {
   screenSize: PropTypes.oneOf(['small', 'medium', 'large']),
-  courses: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.number
-    ]).isRequired,
-    name: PropTypes.string.isRequired,
-    city: PropTypes.string,
-    state: PropTypes.string,
-  })),
+  courses: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.shape({
+      id: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number
+      ]).isRequired,
+      name: PropTypes.string.isRequired,
+      city: PropTypes.string,
+      state: PropTypes.string,
+    })),
+    PropTypes.array
+  ])
+  ,
   handleDeleteCourse: PropTypes.func.isRequired
 }
+
 
 export default Courses;
 

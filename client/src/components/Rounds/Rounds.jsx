@@ -48,13 +48,13 @@ const Rounds = ({ screenSize, rounds, btnText, currentRound, handleDeleteRound }
               ?
               rounds.map(round =>
                 <RoundRow
-                  key={round.id}
+                  key={round._id}
                   round={round}
                   handleDeleteRound={handleDeleteRound}
                   route={
-                    currentRound && currentRound.id === round.id
+                    currentRound && currentRound._id === round._id
                       ? `/rounds/start/scorecard`
-                      : `/rounds/${round.id}/scorecard`
+                      : `/rounds/${round._id}/scorecard`
 
                   }
                 />
@@ -88,24 +88,32 @@ const RoundRow = ({ round, handleDeleteRound, route }) => {
   // create an enum for the months
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-  // calculate the round's score
-  const score = round
-    .holes.map(hole => Number(hole.strokes))
-    .reduce((total, num) => total + num);
-  const date = new Date(round.date);
+  // calculate the round's score 
+  let score;
+  if (round.holes.length > 0) {
+    score = round
+      .holes.map(hole => Number(hole.strokes))
+      .reduce((total, num) => total + num);
+  } else {
+    score = 0
+  }
+
+  const date = new Date(round.datePlayed);
 
   return (
+
+
     <p className={styles.RoundRow}>
       <Link to={route} className={styles.score}>
         {score}
       </Link>
       <Link to={route} className={styles.course}>
-        {round.course}
+        {round.course ? round.course.name : "Course Not Found"}
       </Link>
       <Link to={route} className={styles.date}>
         {`${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`}
       </Link>
-      <button className={styles.delete} onClick={() => handleDeleteRound(round.id)} >
+      <button className={styles.delete} onClick={() => handleDeleteRound(round._id)} >
         <FontAwesomeIcon icon={faTrashAlt} />
       </button>
     </p>

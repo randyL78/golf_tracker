@@ -1,5 +1,6 @@
 // dependencies
-import mongoose from 'mongoose';
+import shortid from 'shortid';
+import uuid from 'uuidv4';
 
 // Import the schema
 import Round from '../schemas/round';
@@ -9,22 +10,71 @@ import Hole from '../schemas/hole';
 
 // find all rounds
 export function findAllRounds(callback) {
-  Round.find({}, (error, rounds) => {
-    if (error) {
-      return false
-    }
-    callback(rounds);
-  })
+  Round
+    .find({})
+    .populate('course')
+    .populate('holes')
+    .exec((err, rounds) => {
+      callback(rounds)
+    })
+
 }
+
+// create a round with holes already supplied and date played created
+export function createRoundWithHoles(id, course, roundHoles, callback) {
+  const newRound = new Round({
+    _id: id || shortid.generate(),
+    course: course._id,
+  })
+
+  // array to store all of the Hole ObjectIds
+  const holes = [];
+
+  // loop through the round holes and create a new Hole 
+  roundHoles.forEach(({ number, strokes, par, putts, fairway }) => {
+    const hole = new Hole({
+      // break down the hole object because the id will have to be overwritten
+      id: uuid(),
+      number,
+      par,
+      strokes,
+      putts,
+      fairway,
+      // reference the round id to connect the holes to the rounds
+      round: newRound._id
+    })
+
+    hole.save(function (err, data) {
+      if (err) console.log(err)
+    });
+
+    holes.push(hole._id);
+  });
+
+  // add the hole ids to the round to connect the two
+  newRound.addHoles(holes);
+
+  // save the round to the DB
+  newRound.save(err => {
+    if (err) callback(err);
+  })
+
+  callback(newRound);
+
+}
+
+
 
 // create a round
 export function createRound(courseId, numberOfHoles, callback) {
 
   // create a new round
   const newRound = new Round({
-    _id: new mongoose.Types.ObjectId(),
+    _id: shortid.generate(),
     course: courseId
-  });
+  }
+
+  );
 
   // array to store all of the Hole ObjectIds
   const holes = [];
@@ -55,7 +105,6 @@ export function createRound(courseId, numberOfHoles, callback) {
 
     if (err) callback(err);
   })
-
   callback(newRound);
 }
 

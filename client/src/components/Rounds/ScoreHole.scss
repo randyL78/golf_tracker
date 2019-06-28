@@ -22,16 +22,22 @@
     font-weight: bold;
   }
 
-  input, select {
+  input, 
+  select {
     text-align: center;
     display: block;
     width: 100%;
     background: $text-white;
-    outline: none;
     border: none;
+    outline: none;
     font-family: $font-stack-primary;
     line-height: 1.5em;
     font-weight: bold;
     font-size: 24px;
+  }
+
+  input:focus,
+  select:focus {
+    background-color: lighten($text-dark, 70%);
   }
 }

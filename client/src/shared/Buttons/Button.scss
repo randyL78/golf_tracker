@@ -13,6 +13,7 @@
   border-radius: 5px;
   flex-basis: 100px;
   margin: 0 15px 0;
+  transition: .3s background-color ease-in-out;
   @media screen and (min-width: $screen-s){
     flex-basis: 150px;
   }
@@ -22,16 +23,28 @@
   &Default {
     @extend %button;
     background-color: $text-dark;
+    &:focus,
+    &:hover {
+      background-color: darken($text-dark, 15%) ;
+    }
   }
 
   &Warning {
     @extend %button;
     background-color: $text-red;
+    &:focus,
+    &:hover {
+      background-color: darken($text-red, 15%) ;
+    }
   }
 
   &Info {
     @extend %button;
     background-color: $gray;
+    &:focus,
+    &:hover {
+      background-color: darken($gray, 15%) ;
+    }
   }
   &Text {
     display: none;

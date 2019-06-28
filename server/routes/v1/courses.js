@@ -7,7 +7,8 @@ import {
   findAllCourses,
   findCourse,
   deleteCourse,
-  updateCourse
+  updateCourse,
+  findAllCourseNames
 } from '../../models/course';
 
 const router = express.Router();
@@ -19,10 +20,18 @@ router.get('/', (req, res) => {
   })
 });
 
+// GET all course names and id's
+// NOTE: For Postman testing purposes only
+router.get('/names', (req, res) => {
+  findAllCourseNames(courses => {
+    res.json(courses);
+  })
+});
+
 //POST add new course information
 router.post('/course/', (req, res) => {
-  const { name, address, zip } = req.body;
-  createCourse(name, address, zip, (data, error = false) => {
+  const { name, address, city, state, zip } = req.body;
+  createCourse(name, address, city, state, zip, (data, error = false) => {
     res.json({
       response: {
         message: data,
@@ -42,8 +51,8 @@ router.get('/course/:slug', (req, res) => {
 
 // PUT update specific course information by :id
 router.put('/course/:slug', (req, res) => {
-  const { params: { slug }, body: { name, address, zip } } = req;
-  updateCourse(slug, name, address, zip, (message, updated) => {
+  const { params: { slug }, body: { name, address, city, state, zip } } = req;
+  updateCourse(slug, name, address, city, state, zip, (message, updated) => {
     res.json({
       message,
       updated
