@@ -3,7 +3,9 @@
     [
       "@babel/preset-env",
       {
-        "debug": true
+        "debug": true,
+        "useBuiltIns": "entry",
+        "corejs": "core-js@2"
       }
     ],
     "@babel/preset-react",

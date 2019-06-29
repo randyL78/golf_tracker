@@ -1,0 +1,47 @@
+@import "../../globalSyles/variables";
+
+.overlay {
+  position: absolute;
+  left: 0; 
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: rgba($text-dark, 0.4);
+  z-index: 200;
+}
+
+.Modal {
+  position: absolute;
+  left: calc(50% - 40%);
+  top: 50px;
+  background: $text-white;
+  width: 80%;
+  text-align: center;
+  padding: 15px;
+  border-radius: 15px;
+
+  @media (min-width: $screen-s) {
+    width: 450px;
+    left: calc(50% - 225px);
+  }
+
+  @media (min-width: $screen-l) {
+    width: 650px;
+    left: calc(50% - 325px);
+  }
+
+  h2 {
+    font-family: $font-stack-headlines;
+    color: $text-dark;
+    text-transform: capitalize;
+  }
+
+  img {
+    display: inline-block;
+    max-width: 100%;
+  }
+
+  .buttonContainer {
+    padding-top: 15px;
+  }
+}

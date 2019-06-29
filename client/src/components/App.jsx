@@ -14,7 +14,6 @@ import Courses, { CourseAddHoles, CourseDisplay, CourseNew } from './Courses/Cou
 import Rounds, { RoundStart, RoundOverview, RoundScorecard, ScoreHole } from './Rounds/Rounds';
 import Statistics from './Statistics/Statistics';
 
-
 // named constants
 const API_URL = `/api/v1/`;  // the base url for the API's current version
 
@@ -438,6 +437,7 @@ class App extends Component {
         {/* Redirect root route to the home route so that NavLink active class works properly */}
         <Route exact path="/" render={() => <Redirect to="/home" />} />
 
+
         <Switch>
           <Route exact path="/home" render={() => <Home screenSize={this.state.screenSize} />} />
 
@@ -642,7 +642,6 @@ class App extends Component {
 
           />
         </Switch>
-
       </div>
     </BrowserRouter>
 }
