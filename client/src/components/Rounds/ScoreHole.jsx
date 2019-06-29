@@ -7,6 +7,7 @@ import { faArrowAltCircleRight, faEye, faTimesCircle } from '@fortawesome/free-s
 import Container, { FormContainer, ButtonContainer } from '../../shared/Containers/Container';
 import { Title, Navigation, Logo, Loading } from '../../shared/Layout';
 import { Button } from '../../shared/Buttons/Button';
+import Modal from '../../components/Modal/Modal';
 
 
 // styles
@@ -28,7 +29,14 @@ class ScoreHole extends Component {
         par: null,
         strokes: null,
         putts: null,
-        fairway: "On Target"
+        fairway: "On Target",
+      },
+      showModal: false,
+      modal: {
+        closeLink: '/',
+        isLoading: true,
+        title: 'loading',
+        image: null
       }
     }
   }
@@ -81,8 +89,10 @@ class ScoreHole extends Component {
           strokes: strokes || null,
           putts: putts || null,
           fairway: fairway || "On Target"
-        }
+        },
+        showModal: false
       })
+
     }
   }
 
@@ -117,7 +127,7 @@ class ScoreHole extends Component {
 
   // handle saving current hole and redirecting to the next
   nextHole = () => {
-    const { history, handleSaveHole, isCurrent, roundId } = this.props;
+    const { handleSaveHole, isCurrent, roundId } = this.props;
     const { currentHole } = this.state;
     const { number } = currentHole;
 
@@ -125,11 +135,78 @@ class ScoreHole extends Component {
 
     const baseUrl = isCurrent ? `/rounds/start/` : `/rounds/${roundId}/`
 
-    // if its the final hole redirect to the round overview route
-    // otherewise redirect to the next hole
-    Number(number) === 18 ?
-      history.push(`/rounds/start/overview`) :
-      history.push(`${baseUrl}hole-${Number(number) + 1}`)
+    const score = currentHole.strokes - currentHole.par;
+
+    let topic;
+
+    if (score < -1) {
+      topic = 'amazing';
+    } else if (score === -1) {
+      topic = 'birdie';
+    } else if (score === 0) {
+      topic = 'par';
+    } else if (score === 1) {
+      topic = 'bogie';
+    } else {
+      topic = 'horrible';
+    }
+
+    this.setModalImage(topic);
+
+    // creat link for modal to use
+    const closeLink = Number(number) === 18 ?
+      `/rounds/start/overview` :
+      `${baseUrl}hole-${Number(number) + 1}`;
+
+    // set state to show the modal
+    this.setState({
+      showModal: true,
+      modal: {
+        closeLink
+      }
+    })
+
+  }
+
+  // fetch and image from Giphy and store it in state
+  setModalImage(topic) {
+    // Giphy's public API key
+    const key = 'dc6zaTOxFJmzC';
+    // the query parameters to search by
+    const query = `golf%2B${topic}`;
+    // limit the respoonse to one gif
+    const limit = 1;
+    // randomize the offset up to 10
+    const offset = Math.floor(Math.random() * 10);
+
+    const url = `http://api.giphy.com/v1/gifs/search?api_key=${key}&q=${query}&limit=${limit}&offset=${offset}`;
+
+    fetch(url)
+      .then(results => results.json())
+      .then(results => results.data[0].images.downsized_large.url)
+      .then(image => {
+        this.setState(prevState => ({
+          modal: {
+            ...prevState.modal,
+            title: topic,
+            image,
+            isLoading: false
+          }
+        })
+        )
+      })
+      .catch(err => {
+        this.setState(prevState => ({
+          modal: {
+            ...prevState.modal,
+            title: 'Score',
+            // backup gif if the public API has had too many requests
+            image: `https://media2.giphy.com/media/DHBqbADArdxoA/giphy-downsized-large.gif?cid=e1bb72ff5d17a926596367784df97357&rid=giphy-downsized-large.gif`,
+            isLoading: false
+          }
+        })
+        )
+      })
   }
 
   // handle saving current hole and redirecting to the scorecard
@@ -148,7 +225,7 @@ class ScoreHole extends Component {
       return <Loading />
     }
 
-    const { currentHole } = this.state
+    const { currentHole, showModal, modal } = this.state
     const { par, strokes, putts, fairway } = currentHole;
 
     return (
@@ -229,6 +306,14 @@ class ScoreHole extends Component {
             </Button>
           </ButtonContainer>
         </Container>
+        {
+          showModal
+            ?
+            <Modal closeLink={modal.closeLink} isLoading={modal.isLoading} image={modal.image} title={modal.title} />
+            :
+            null
+        }
+
       </div>
     )
   }
