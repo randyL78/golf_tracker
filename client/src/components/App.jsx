@@ -494,7 +494,7 @@ class App extends Component {
     *         Render the App
     * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
   render = () =>
-    <BrowserRouter>
+    <BrowserRouter basename='/golf-tracker/' >
       <div className={styles.App}>
         {/* Redirect root route to the home route so that NavLink active class works properly */}
         <Route exact path="/" render={() => <Redirect to="/home" />} />
