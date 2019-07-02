@@ -113,6 +113,7 @@ class App extends Component {
     return screenSize;
   }
 
+  // returns the authentication headers for all server transactions
   getAuthHeaders = () => {
     // turn api username and password into a url encoded base 64 string
     const encodedAuth = Buffer
@@ -132,6 +133,10 @@ class App extends Component {
   // get a specific course's information by it's slug
   getCourse = slug =>
     this.state.courses.find(course => course.slug === slug);
+
+  // get a specific course's information by it's id
+  getCourseById = id =>
+    this.state.courses.find(course => course._id === id);
 
   // get all courses.
   getCourses = () => {
@@ -339,19 +344,20 @@ class App extends Component {
   }
 
   // handle starting a new round
-  handleStartRound = (course) => {
+  handleStartRound = courseId => {
 
-    this.getHolesByCourse(course)
+    this.getHolesByCourse(courseId)
+
+    const course = {
+      ...this.getCourseById(courseId)
+    }
 
     this.setState(prevState => ({
       isInARound: true,
       currentRound: {
         _id: shortid.generate(),   // create a url friendly id
         datePlayed: Date.now(),
-        course: {
-          name: this.getCourseName(course),
-          _id: course
-        },
+        course,
         holes: prevState.holes
       },
     }));
@@ -372,14 +378,18 @@ class App extends Component {
       },
       body: JSON.stringify(this.state.currentRound)
     })
-      // refresh the rounds
-      .then(res => { this.getRounds() })
       .catch(error => this.setState({ error }));
 
     // reset the current round and take out `in a round` state
     this.setState(prevState => ({
       isInARound: false,
       currentRound: null,
+      rounds: [
+        {
+          ...prevState.currentRound
+        },
+        ...prevState.rounds
+      ]
     }))
 
     history.push('/home');

@@ -27,11 +27,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // enable console logging of HTTP requests in development
 app.use(logger());
 
+// password for DB User profile so that server can gain access to DB
 const pass = encodeURIComponent('golfapp');
 
 // Connect Database
 mongoose.set('useCreateIndex', true);
-
 mongoose.connect('mongodb+srv://golfapp:' + pass + '@golftracker-v1-yo2ao.mongodb.net/test?retryWrites=true&w=majority', { useNewUrlParser: true });
 
 // Routes
