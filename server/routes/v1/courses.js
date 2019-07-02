@@ -1,5 +1,6 @@
 // Dependencies
 import express from 'express';
+import authenticate from '../../middleware/authenticate';
 
 // Model functions
 import {
@@ -13,8 +14,11 @@ import {
 
 const router = express.Router();
 
+// check for authentication in request header
+router.use(authenticate);
+
 // GET all courses' information
-router.get('/', (req, res) => {
+router.get('/', (req, res, next) => {
   findAllCourses(courses => {
     res.json(courses);
   })
@@ -44,8 +48,14 @@ router.post('/course/', (req, res) => {
 // GET get specific course information by :id
 router.get('/course/:slug', (req, res) => {
   const { params: { slug } } = req;
-  findCourse(slug, courses => {
-    res.json(courses);
+  findCourse(slug, course => {
+    if (course) {
+      res.json(course);
+    } else {
+      const err = new Error("Course not found");
+      err.status = 401;
+      next(err);
+    }
   })
 });
 

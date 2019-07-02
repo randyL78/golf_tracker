@@ -95,8 +95,8 @@ export function updateHole(id, number, par, strokes, putts, fairway, round, cour
     strokes,
     putts,
     fairway,
-    round,
-    course
+    round: round || null,
+    course: course || null
   };
 
   Hole.updateOne({ _id: id }, updatedHole, (error, hole) => {

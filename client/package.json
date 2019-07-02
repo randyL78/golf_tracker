@@ -8,6 +8,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.9.0",
     "@fortawesome/react-fontawesome": "^0.1.4",
     "css-loader": "^2.1.1",
+    "easy-ftp": "^0.4.0",
     "extract-text-webpack-plugin": "^3.0.2",
     "node-sass": "^4.12.0",
     "prop-types": "^15.7.2",
@@ -40,11 +41,13 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",
     "start": "webpack-dev-server --mode development --open --port 3000",
-    "start-dist": "http-server dist/"
+    "start-dist": "http-server dist/",
+    "deploy": "node deploy.js"
   },
   "author": "Randy Layne",
   "license": "MIT",
   "repository": {
     "git": "https://github.com/randyL78/golf_tracker/tree/master/client"
-  }
+  },
+  "homepage": "https://randylayne.com/golf-tracker"
 }
