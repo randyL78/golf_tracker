@@ -15,7 +15,13 @@ import Statistics from './Statistics/Statistics';
 import { serverApi } from '../config';
 
 // named constants
-const API_URL = `/api/v1/`;  // the base url for the API's current version
+
+// the base url for the API's current version
+// live production version
+// const API_URL = `http://golftracker-env.umuiwt3bdy.us-east-1.elasticbeanstalk.com/api/v1/`;  
+
+// dev version
+const API_URL = `/api/v1/`;
 
 /**
  * Main App component responsible for handling routes, redirection,
@@ -494,7 +500,7 @@ class App extends Component {
     *         Render the App
     * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
   render = () =>
-    <BrowserRouter basename='/golf-tracker/' >
+    <BrowserRouter >
       <div className={styles.App}>
         {/* Redirect root route to the home route so that NavLink active class works properly */}
         <Route exact path="/" render={() => <Redirect to="/home" />} />
