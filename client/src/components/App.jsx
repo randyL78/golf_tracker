@@ -3,7 +3,6 @@ import React, { Component } from 'react';
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 import shortid from 'shortid';
 
-
 // styles
 import styles from './App.scss';
 
@@ -13,6 +12,7 @@ import Home from './Home/Home';
 import Courses, { CourseAddHoles, CourseDisplay, CourseNew } from './Courses/Courses';
 import Rounds, { RoundStart, RoundOverview, RoundScorecard, ScoreHole } from './Rounds/Rounds';
 import Statistics from './Statistics/Statistics';
+import { serverApi } from '../config';
 
 // named constants
 const API_URL = `/api/v1/`;  // the base url for the API's current version
@@ -23,8 +23,6 @@ const API_URL = `/api/v1/`;  // the base url for the API's current version
  * @param {*} props
  */
 class App extends Component {
-
-
 
   // constructor
   constructor(props) {
@@ -67,6 +65,9 @@ class App extends Component {
 
     // add event listener to detect window resizing.
     window.addEventListener('resize', this.updateScreenSize);
+
+    // do an initial check for window screen size
+    this.updateScreenSize();
 
     // fetch all course data
     this.getCourses();
@@ -112,6 +113,18 @@ class App extends Component {
     return screenSize;
   }
 
+  getAuthHeaders = () => {
+    // turn api username and password into a url encoded base 64 string
+    const encodedAuth = Buffer
+      .from(`${serverApi.name}:${serverApi.pass}`)
+      .toString('base64');
+
+    // necessary for the authorization on the server side
+    return `Basic ${encodedAuth}`
+  };
+
+
+
   /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     *          Course Related Methods
     * -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
@@ -126,10 +139,17 @@ class App extends Component {
       isCoursesLoading: true
     })
 
+    // API route to get courses
     const url = `${API_URL}courses`;
 
-    fetch(url)
+    fetch(url, {
+      method: 'Get',
+      headers: {
+        'Authorization': this.getAuthHeaders()
+      }
+    })
       .then(data => data.json())
+      // sort the course names alphabetically
       .then(courses => courses.sort((a, b) => a.name > b.name ? 1 : -1))
       .then(courses =>
         this.setState({
@@ -151,7 +171,11 @@ class App extends Component {
     this.setState({ areHolesLoading: true });
 
     const url = `${API_URL}holes/course/${courseId}`;
-    fetch(url)
+    fetch(url, {
+      headers: {
+        'Authorization': this.getAuthHeaders()
+      }
+    })
       .then(data => data.json())
       .then(res => res.response.message)
       .then(holes => holes.sort((a, b) => a.number - b.number))
@@ -178,7 +202,12 @@ class App extends Component {
     const url = `${API_URL}courses/course/${slug}`;
 
     // delete course from database
-    fetch(url, { method: 'DELETE' })
+    fetch(url, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': this.getAuthHeaders()
+      }
+    })
       .catch(error =>
         this.setState({ error })
       )
@@ -204,7 +233,10 @@ class App extends Component {
     const url = `${API_URL}courses/course`;
     fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': this.getAuthHeaders()
+      },
       body: JSON.stringify(newCourse)
     })
       // refresh courselist in state
@@ -227,7 +259,10 @@ class App extends Component {
     const url = `${API_URL}courses/course/${updatedCourse.slug}`;
     fetch(url, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': this.getAuthHeaders()
+      },
       body: JSON.stringify(updatedCourse)
     })
       // refresh courselist in state
@@ -263,6 +298,10 @@ class App extends Component {
   updateHolePars = holes => {
     holes.map(hole => this.updateHole(hole))
 
+    this.setState({
+      currentRound: null
+    })
+
     return true;
   }
 
@@ -276,7 +315,11 @@ class App extends Component {
 
     const url = `${API_URL}rounds`;
 
-    fetch(url)
+    fetch(url, {
+      headers: {
+        'Authorization': this.getAuthHeaders()
+      }
+    })
       .then(data => data.json())
       .then(rounds => rounds.sort((a, b) => a.date > b.date ? 1 : -1))
       .then(rounds =>
@@ -296,7 +339,7 @@ class App extends Component {
   }
 
   // handle starting a new round
-  handleStartRound = (course, history) => {
+  handleStartRound = (course) => {
 
     this.getHolesByCourse(course)
 
@@ -313,7 +356,7 @@ class App extends Component {
       },
     }));
 
-    history.push('/rounds/start/overview');
+    return true;
   }
 
   // save round progress
@@ -323,7 +366,10 @@ class App extends Component {
     const url = `${API_URL}rounds/round`;
     fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': this.getAuthHeaders()
+      },
       body: JSON.stringify(this.state.currentRound)
     })
       // refresh the rounds
@@ -351,7 +397,12 @@ class App extends Component {
 
       const url = `${API_URL}rounds/round/${id}`
       // send a delete request to API
-      fetch(url, { method: 'DELETE' })
+      fetch(url, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': this.getAuthHeaders()
+        }
+      })
         // fetch the rounds back from API
         .then(() => this.getRounds())
     }
@@ -394,8 +445,6 @@ class App extends Component {
         }
       }));
 
-
-
       // otherwise save it as a current round
     } else {
       const holes = [
@@ -421,7 +470,10 @@ class App extends Component {
     const url = `${API_URL}holes/hole/${hole._id}`;
     fetch(url, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': this.getAuthHeaders()
+      },
       body: JSON.stringify(hole)
     }).catch(error => this.setState({ error }));
   }
@@ -528,15 +580,13 @@ class App extends Component {
           {/* start a new round */}
           {/* if currently in a round, will redirect to round overview */}
           <Route exact path="/rounds/start" render={props =>
-            !this.state.isInARound ?
-              <RoundStart
-                screenSize={this.state.screenSize}
-                courses={this.state.courses}
-                history={props.history}
-                handleStartRound={this.handleStartRound}
-              />
-              :
-              <Redirect to="/rounds/start/overview" />
+            <RoundStart
+              screenSize={this.state.screenSize}
+              courses={this.state.courses}
+              history={props.history}
+              handleStartRound={this.handleStartRound}
+              isInARound={this.state.isInARound}
+            />
           }
           />
 

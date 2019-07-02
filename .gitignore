@@ -85,3 +85,7 @@ server/data
 *.turtle
 *.lock
 *.interim 
+
+#Deploy information
+client/deploy.js
+server/deploy.js

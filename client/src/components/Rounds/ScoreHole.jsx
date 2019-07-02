@@ -1,5 +1,6 @@
 // dependencies
 import React, { Component } from 'react';
+import { Redirect } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowAltCircleRight, faEye, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 
@@ -8,6 +9,7 @@ import Container, { FormContainer, ButtonContainer } from '../../shared/Containe
 import { Title, Navigation, Logo, Loading } from '../../shared/Layout';
 import { Button } from '../../shared/Buttons/Button';
 import Modal from '../../components/Modal/Modal';
+import { giphyApiKey } from '../../config';
 
 
 // styles
@@ -34,10 +36,11 @@ class ScoreHole extends Component {
       showModal: false,
       modal: {
         closeLink: '/',
-        isLoading: true,
+        isLoading: false,
         title: 'loading',
         image: null
-      }
+      },
+      redirectUrl: null
     }
   }
 
@@ -90,7 +93,8 @@ class ScoreHole extends Component {
           putts: putts || null,
           fairway: fairway || "On Target"
         },
-        showModal: false
+        showModal: false,
+        redirectUrl: null
       })
 
     }
@@ -139,24 +143,28 @@ class ScoreHole extends Component {
 
     let topic;
 
-    if (score < -1) {
-      topic = 'amazing';
-    } else if (score === -1) {
-      topic = 'birdie';
-    } else if (score === 0) {
-      topic = 'par';
-    } else if (score === 1) {
-      topic = 'bogie';
-    } else {
-      topic = 'horrible';
-    }
-
-    this.setModalImage(topic);
-
     // creat link for modal to use
     const closeLink = Number(number) === 18 ?
       `/rounds/start/overview` :
       `${baseUrl}hole-${Number(number) + 1}`;
+
+    // only show modal for a good score
+    if (score < -1 && currentHole.strokes > 0) {
+      topic = 'amazing shot';
+    } else if (score === -1) {
+      topic = 'birdie';
+    } else if (score > 2) {
+      topic = 'fail';
+    } else if (Number(currentHole.putts) === 1) {
+      topic = 'drained it';
+    } else {
+      // if not a good score redirect to next hole
+      this.setState({ redirectUrl: closeLink });
+      return;
+    }
+
+    // select an image from giphy based on topic/score
+    this.setModalImage(topic);
 
     // set state to show the modal
     this.setState({
@@ -165,48 +173,54 @@ class ScoreHole extends Component {
         closeLink
       }
     })
-
   }
 
   // fetch and image from Giphy and store it in state
   setModalImage(topic) {
-    // Giphy's public API key
-    const key = 'dc6zaTOxFJmzC';
-    // the query parameters to search by
-    const query = `golf%2B${topic}`;
-    // limit the respoonse to one gif
-    const limit = 1;
-    // randomize the offset up to 10
-    const offset = Math.floor(Math.random() * 10);
+    if (!this.state.modal.isLoading) {
+      this.setState(prevState => ({
+        modal: {
+          ...prevState.modal,
+          isLoading: true
+        }
+      }))
 
-    const url = `http://api.giphy.com/v1/gifs/search?api_key=${key}&q=${query}&limit=${limit}&offset=${offset}`;
+      // the query parameters to search by
+      const query = `golf%2B${topic}`;
+      // limit the respoonse to one gif
+      const limit = 1;
+      // randomize the offset up to 10
+      const offset = Math.floor(Math.random() * 100);
 
-    fetch(url)
-      .then(results => results.json())
-      .then(results => results.data[0].images.downsized_large.url)
-      .then(image => {
-        this.setState(prevState => ({
-          modal: {
-            ...prevState.modal,
-            title: topic,
-            image,
-            isLoading: false
-          }
+      const url = `http://api.giphy.com/v1/gifs/search?api_key=${giphyApiKey}&q=${query}&limit=${limit}&offset=${offset}`;
+
+      fetch(url)
+        .then(results => results.json())
+        .then(results => results.data[0].images.downsized_large.url)
+        .then(image => {
+          this.setState(prevState => ({
+            modal: {
+              ...prevState.modal,
+              title: topic,
+              image,
+              isLoading: false
+            }
+          })
+          )
         })
-        )
-      })
-      .catch(err => {
-        this.setState(prevState => ({
-          modal: {
-            ...prevState.modal,
-            title: 'Score',
-            // backup gif if the public API has had too many requests
-            image: `https://media2.giphy.com/media/DHBqbADArdxoA/giphy-downsized-large.gif?cid=e1bb72ff5d17a926596367784df97357&rid=giphy-downsized-large.gif`,
-            isLoading: false
-          }
+        .catch(err => {
+          this.setState(prevState => ({
+            modal: {
+              ...prevState.modal,
+              title: 'Score',
+              // backup gif if the public API has had too many requests
+              image: `https://media.giphy.com/media/82CRZpV77lIU0QXzmW/giphy.gif`,
+              isLoading: false
+            }
+          })
+          )
         })
-        )
-      })
+    }
   }
 
   // handle saving current hole and redirecting to the scorecard
@@ -225,17 +239,24 @@ class ScoreHole extends Component {
       return <Loading />
     }
 
-    const { currentHole, showModal, modal } = this.state
+    const { currentHole, showModal, modal, redirectUrl } = this.state
     const { par, strokes, putts, fairway } = currentHole;
 
     return (
+
       <div className={styles.ScoreHole} >
+        {
+          redirectUrl
+            ?
+            <Redirect to={redirectUrl} />
+            :
+            null
+        }
         <Logo inline={true} />
         <Navigation showMenu={screenSize !== 'large'} />
         <Container >
           <Title title={`Hole #${number}`} />
           <FormContainer>
-
             <table>
               <thead>
                 <tr>
@@ -290,9 +311,7 @@ class ScoreHole extends Component {
                   </td>
                 </tr>
               </tbody>
-
             </table>
-
           </FormContainer>
           <ButtonContainer>
             <Button text="Reset" style="Warning" handleOnClick={this.handleReset}>
@@ -313,7 +332,6 @@ class ScoreHole extends Component {
             :
             null
         }
-
       </div>
     )
   }

@@ -4,6 +4,7 @@
   "description": "Express and React App for keeping track of how well you did in a round of golf. Additionally, uses weather API to warn of stormy weather approaching while out on the links and Giphy API for displaying gif's for great shot's, etc.",
   "main": "server/app.js",
   "dependencies": {
+    "basic-auth": "^2.0.1",
     "body-parser": "^1.19.0",
     "concurrently": "^4.1.1",
     "core-js": "^2.6.9",
@@ -12,6 +13,7 @@
     "http-errors": "^1.7.2",
     "mongodb": "^3.2.7",
     "mongoose": "^5.5.9",
+    "morgan": "^1.9.1",
     "nodemon": "^1.19.0",
     "pino-colada": "^1.4.4",
     "shortid": "^2.2.14",
@@ -30,10 +32,9 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start-server": "nodemon app.js --exec babel-node | pino-colada",
+    "start-server": "babel-node app.js | pino-colada",
     "start-client": "cd ../client && npm start",
-    "start-db": "mongod --port 27019 --dbpath data",
-    "start": "concurrently \"npm run start-db\"  \"npm run start-server\" \"npm run start-client\""
+    "start": "concurrently \"npm run start-server\" \"npm run start-client\""
   },
   "repository": {
     "type": "git",

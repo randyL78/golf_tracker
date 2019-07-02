@@ -1,5 +1,6 @@
 // Dependencies
 import express from 'express';
+import authenticate from '../../middleware/authenticate';
 
 // Model functions
 import {
@@ -8,14 +9,15 @@ import {
 
 import { findHoleByRoundNumber, deleteRoundHoles, findHolesByRoundNumber } from '../../models/hole';
 
-import { findAllCourseNames } from '../../models/course';
-
 const router = express.Router();
+
+// check for authentication in request header
+router.use(authenticate);
+
 
 // GET all rounds
 router.get('/', (req, res) => {
 
-  // TODO: Convert to Promise All instead of triple callback hell
   findAllRounds(rounds => {
     res.json(rounds);
   })
@@ -34,7 +36,6 @@ router.get('/round/:id/holes', (req, res) => {
       }
     });
   })
-
 });
 
 // POST new round

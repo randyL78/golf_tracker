@@ -9,7 +9,7 @@ import { LinkButton, Button } from '../../shared/Buttons/Button';
 import { Loading } from '../../shared/Layout';
 
 // placeholder images for testing styles
-import image from '../../images/golf_standing.jpeg';
+// import image from '../../images/golf_standing.jpeg';
 
 // styles
 import styles from './Modal.scss';
@@ -37,7 +37,6 @@ const Modal = ({ closeLink, isLoading, title, image }) =>
 Modal.defaultProps = {
   title: '',
   closeLink: '/home',
-  // image: image,
   isLoading: true
 }
 

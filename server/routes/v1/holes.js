@@ -1,5 +1,7 @@
 // Dependencies
 import express from 'express';
+import authenticate from '../../middleware/authenticate';
+
 
 // Model functions
 import {
@@ -12,6 +14,9 @@ import {
 } from '../../models/hole';
 
 const router = express.Router();
+
+// check for authentication in request header
+router.use(authenticate);
 
 // GET all holes
 router.get('/', (req, res) => {
