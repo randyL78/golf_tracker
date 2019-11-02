@@ -12,7 +12,7 @@
     "express-pino-logger": "^4.0.0",
     "http-errors": "^1.7.2",
     "mongodb": "^3.2.7",
-    "mongoose": "^5.5.9",
+    "mongoose": "^5.7.5",
     "morgan": "^1.9.1",
     "nodemon": "^1.19.0",
     "pino-colada": "^1.4.4",
